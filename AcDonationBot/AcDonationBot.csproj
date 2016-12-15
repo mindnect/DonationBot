@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{94DE2DDA-9A79-403B-8BC4-3FFA35BF8A1F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AlcoholV</RootNamespace>
+    <AssemblyName>AcDonationBot</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Unity Full v3.5</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>AcDonationBot\Assemblies\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ACDonationBot.cs" />
+    <Compile Include="Watcher\AddedContentReader.cs" />
+    <Compile Include="Watcher\Watcher.cs" />
+    <Compile Include="Incident\AcIncidentWorker_RaidEnemy.cs" />
+    <Compile Include="MainTabWindow\Donation.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tabs\WindowTab_Event.cs" />
+    <Compile Include="Tabs\WindowTab_Log.cs" />
+    <Compile Include="Tabs\WindowTab_Setting.cs" />
+    <Compile Include="Tabs\IWindowTab.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Assembly-CSharp\Assembly-CSharp.csproj">
+      <Project>{0662e0c9-c2c0-430b-9165-10fc73b33e44}</Project>
+      <Name>Assembly-CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AcDonationBot\About\About.xml" />
+    <Content Include="AcDonationBot\Assemblies\AcDonationBot.dll" />
+    <Content Include="AcDonationBot\Defs\MainTabDefs\WorkTab.xml">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AcDonationBot\Assemblies.reloading\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /E /Y /I "$(ProjectDir)$(TargetName)" "C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\$(TargetName)\"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
