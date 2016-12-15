@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace AlcoholV.Tabs
+namespace ChatApp.Tabs
 {
     class WindowTab_Event : IWindowTab
     {

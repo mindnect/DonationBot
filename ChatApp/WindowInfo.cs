@@ -1,6 +1,6 @@
 using System;
 
-namespace AlcoholV
+namespace ChatApp
 {
 	internal class WindowInfo
 	{

@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using AlcoholV.Incident;
+using ChatApp.Incident;
 using RimWorld;
 using Verse;
 
-namespace AlcoholV
+namespace ChatApp
 {
     [StaticConstructorOnStartup]
     public class AcDonationBot

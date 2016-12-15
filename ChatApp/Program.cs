@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using AlcoholV;
+using ChatApp;
 
-namespace ChatHooker
+namespace ChatApp
 {
     internal class Program
     {
@@ -14,27 +14,20 @@ namespace ChatHooker
         {
             var t = new ChatTVPot();
             t.Initialize();
-            t.FindPotplayer();
-          
-            
+
             while (true)
             {
                 t.Update();
-
-                Thread.Sleep(100);
                 var list = t.GetNewChatList();
-
-
                 var writer = File.AppendText(FilePath);
                 writer.AutoFlush = true;
                 foreach (var chatData in list)
                 {
-
-                    //if (chatData.isSpon)
+                    //Thread.Sleep(100);
+                    //if (chatData.isDonation)
                     {
-                        //Console.WriteLine(chatData.user.platform);
-                        //Console.WriteLine(chatData.user.username +"/t"+ chatData.amount+"/t"+chatData.message);
-                        writer.WriteLine(chatData.user.username + "\t" + chatData.message + "\t" + chatData.amount);
+                        //writer.WriteLine(chatData.user.nickName + "\t" + chatData.message + "\t" + chatData.amount);
+                        Console.WriteLine(chatData.user.rank + "\t" + chatData.user.nickName + "\t" + chatData.message + "\t" + chatData.amount);
                         //writer.WriteLine
                     }
                     

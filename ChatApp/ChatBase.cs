@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using ChatApp;
 using mshtml;
 
-namespace AlcoholV
+namespace ChatApp
 {
     internal class ChatBase
     {
-        protected IHTMLDocument2 document;
+        protected HTMLDocument document;
 
         protected List<ChatData> listNewChat;
 
@@ -50,7 +51,6 @@ namespace AlcoholV
                 if (disposable != null)
                     disposable.Dispose();
             }
-            return variable;
         }
 
         protected int GetElementUniqueNumber(IHTMLElement element)
@@ -67,13 +67,13 @@ namespace AlcoholV
         {
             if (mapUser.ContainsKey(username))
                 return mapUser[username];
-            var userDatum = new UserData
+            var userData = new UserData
             {
-                username = username
+                nickName = username
             };
-            mapUser.Add(username, userDatum);
-            OnUserAdded(userDatum);
-            return userDatum;
+            mapUser.Add(username, userData);
+            OnUserAdded(userData);
+            return userData;
         }
 
         public virtual void Initialize()

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace AlcoholV.Watcher
+namespace ChatApp.Watcher
 {
     public class AddedContentReader
     {

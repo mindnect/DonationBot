@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using AlcoholV.Incident;
+using ChatApp.Incident;
 using RimWorld;
 using Verse;
 
-namespace AlcoholV.Watcher
+namespace ChatApp.Watcher
 {
     internal class Watcher : MapComponent
     {

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using mshtml;
 
-namespace AlcoholV
+namespace ChatApp
 {
     internal class Win32
     {
@@ -58,7 +58,7 @@ namespace AlcoholV
         public static extern int SendMessageTimeout(IntPtr hwnd, int msg, int wParam, int lParam, int fuFlags, int uTimeout, out int lpdwResult);
 
         [DllImport("OLEACC.dll")]
-        public static extern int ObjectFromLresult(int lResult, ref Guid riid, int wParam, ref IHTMLDocument2 ppvObject);
+        public static extern int ObjectFromLresult(int lResult, ref Guid riid, int wParam, ref HTMLDocument ppvObject);
 
         [DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);

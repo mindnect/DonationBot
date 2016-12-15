@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace AlcoholV.Tabs
+namespace ChatApp.Tabs
 {
     public interface IWindowTab
     {

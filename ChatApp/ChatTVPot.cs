@@ -3,7 +3,7 @@ using System.Collections;
 using System.Text;
 using mshtml;
 
-namespace AlcoholV
+namespace ChatApp
 {
     internal class ChatTVPot : ChatBase
     {
@@ -18,6 +18,67 @@ namespace AlcoholV
         private bool waitForSelect;
 
         private IHTMLElement chatRoot;
+
+        private void ParseHtmlElement(IHTMLElement element , ChatData ret)
+        {
+            foreach (var child in element.children)
+            {
+                var current = (IHTMLElement) child;
+                ParseHtmlElement(current, ret);
+
+                string message;
+
+                switch (current.className)
+                {
+                    case "txt_notice": // 알림
+                        ret.isNotice = true;
+                        break;
+
+                    case "tit_whisper": // 귓속말 아이디
+                    case "tit_name": // 채팅 아이디
+                        if (current.className == "tit_whisper") ret.isWhisper = true;
+
+                        message = current.outerText;
+                        message = message.Split(' ','(')[0];
+                        ret.user.platform = "Daum";
+
+                        if (message[0] == 'P')
+                        {
+                            ret.user.rank = "PD";
+                            message = message.Replace("PD\r\n", "");
+                        }
+                        else if (message[0] == 'A')
+                        {
+                            ret.user.rank = "AD";
+                            message = message.Replace("AD\r\n", "");
+                        }
+                        ret.user.nickName = message;
+                        break;
+
+                    case "info_words": // 채팅 메세지
+                    case "txt_message box_type01": // 후원 메세지
+                    case "info_whisper": // 귓속말 메세지
+                        message = current.outerText;
+                        message = message.Replace("\n", ""); // 후원 메세지 들어올떄 \n 들어옴
+                        ret.message = message;
+                        break;
+
+                    case "txt_money txt_type01": // 후원 금액
+                        ret.isDonation = true;
+                        var amountStr = current.outerText;
+                        amountStr = amountStr.Replace(",", "");
+                        Console.WriteLine(amountStr);
+                        ret.amount = int.Parse(amountStr);
+                        break;
+
+                    case "txt_spon": // 후원자
+                        var nickName = current.outerText.Substring(0, current.outerText.Length - 11);
+                        ret.user.nickName = nickName;
+                        break;
+                }
+            }
+        }
+
 
 
 
@@ -64,7 +125,7 @@ namespace AlcoholV
             }
         }
 
-        private IHTMLElement FindChatRoot(IHTMLDocument2 tempDocument, int maxAttemptCount)
+        private IHTMLElement FindChatRoot(HTMLDocument tempDocument, int maxAttemptCount)
         {
             var num = maxAttemptCount;
             foreach (var child in (IEnumerable) tempDocument.body.children)
@@ -73,12 +134,11 @@ namespace AlcoholV
                 num--;
                 if (num > 0)
                 {
-
                     if (variable.className != "wrap_chat")
                         continue;
                     var num1 = 0;
                     foreach (var obj in (IEnumerable) variable.children)
-                    { 
+                    {
                         var variable1 = (IHTMLElement) obj;
                         num1++;
                     }
@@ -122,7 +182,7 @@ namespace AlcoholV
                 }
                 else
                 {
-                    Console.Write("Control Found");
+                    Console.WriteLine("Control Found");
                     break;
                 }
             }
@@ -143,33 +203,33 @@ namespace AlcoholV
                 else if (windowPotPlayers.Length > 1)
                 {
                     waitForSelect = true;
-                    selectedPotPlayerIdx = ConsoleSelectPotPlayer();
+                    ConsoleSelectPotPlayer();
                     //new FormSelectPotPlayer().Show();
                 }
             }
+            Console.WriteLine(windowPotPlayers[selectedPotPlayerIdx].caption + " 후킹중.");
             if (selectedPotPlayerIdx == -1)
                 return;
             FindChatRoot();
         }
 
-        private int ConsoleSelectPotPlayer()
+        private void ConsoleSelectPotPlayer()
         {
             Console.WriteLine("한 개 이상 실행중.");
-            for (var i = 1; i < windowPotPlayers.Length; i++)
+            for (var i = 0; i < windowPotPlayers.Length; i++)
             {
-                var windowPotPlayer = windowPotPlayers[i-1];
-                Console.WriteLine(i + " : " + windowPotPlayer.caption);
+                var windowPotPlayer = windowPotPlayers[i];
+                Console.WriteLine(i + 1 + " : " + windowPotPlayer.caption);
             }
-            var UserInput = Console.ReadKey();
+            var UserInput = Console.ReadKey(true);
             waitForSelect = false;
-            return int.Parse(UserInput.KeyChar.ToString())-1;
-            
+            selectedPotPlayerIdx = int.Parse(UserInput.KeyChar.ToString()) - 1;
         }
 
-        public IHTMLDocument2 GetDocument(IntPtr hWndExplorer)
+        public HTMLDocument GetDocument(IntPtr hWndExplorer)
         {
             int num;
-            IHTMLDocument2 variable = null;
+            HTMLDocument variable = null;
             var num1 = 0;
             num1 = Win32.RegisterWindowMessage("WM_HTML_GETOBJECT");
             if (num1 != 0)
@@ -183,7 +243,7 @@ namespace AlcoholV
                     // MessageBox.Show("Couldn't Found Document", "Warning");
                 }
             }
-            
+            Console.WriteLine("Find Document");
             return variable;
         }
 
@@ -296,6 +356,7 @@ namespace AlcoholV
             if (lastElementIdx == -1) lastElementIdx = num - 1;
             if (lastElementIdx > root.children.length - 1)
             {
+                Console.WriteLine("호출되면 안됩니다.");
                 var num1 = 50;
                 var num2 = num - 1;
                 while (num2 >= num - 1 - num1)
@@ -309,87 +370,24 @@ namespace AlcoholV
                         break;
                     }
             }
+
+
             for (var i = lastElementIdx + 1; i < num; i++)
             {
-                IHTMLElement variable = (IHTMLElement)((dynamic)root.children).Item(i);
-                if (variable == null) break;
-
-                IHTMLElement variable1 = (IHTMLElement)((dynamic)variable.children).Item(0);
-                var length = variable1.className.Length;
-
-                if (((length == 9) || (length == 20)) && variable1.className.Contains("area_chat"))
-                {
-                    var variable2 = FindClassFromChild(variable1, "tit_name");
-
-                    if (variable2 != null)
-                    {
-                        var str = variable2.outerText;
-                        var num3 = -1;
-                        for (var j = 0; j < str.Length; j++)
-                            if (str[j] == '(')
-                                num3 = j;
-                        var nickName = str.Substring(0, num3);
-                        if (nickName[0] == 'P')
-                            nickName = nickName.Replace("PD\r\n", "");
-                        else if (nickName[0] == 'A')
-                            nickName = nickName.Replace("AD\r\n", "");
-                        if (nickName[nickName.Length - 1] == ' ')
-                            nickName = nickName.Remove(nickName.Length - 1);
-                        var variable3 = FindClassFromChild(variable1, "info_words");
-                        if (variable3 != null)
-                        {
-                            var message = variable3.outerText;
-                            var chatDatum = new ChatData
-                            {
-                                user = GetUserData(nickName),
-                                message = message
-                            };
-                            AddChatData(chatDatum);
-                        }
-                    }
-                }
-
-                else if ((variable1.className != null) && variable1.className.Contains("txt_notice"))
-                {
-                    var var3 = FindClassFromChild(variable1, "txt_spon");
-                    if (var3 != null)
-                    {
-                        var variable2 = FindClassFromChild(variable1, "txt_spon");
-                        if (variable2 != null)
-                        {
-                            var nickName = variable2.outerText.Substring(0, variable2.outerText.Length - 11);
-                            var message = "";
-                            var messageElement = FindClassFromChild(variable1, "txt_message box_type01");
-                            if (messageElement != null)
-                            {
-                                message = messageElement.outerText;
-                                message = message.Replace("\r\n", "");
-                            }
+                var htmlElement = (IHTMLElement) root.children.Item(i);
+                if (htmlElement == null) break;
 
 
-                            var amountTxt = FindClassFromChild(variable1, "area_sticker type_01").outerText;
-                            amountTxt = amountTxt.Replace(" ", "");
-                            amountTxt = amountTxt.Replace(",", "");
-
-                            var amount = int.Parse(amountTxt);
-
-                            var chatDatum = new ChatData
-                            {
-                                isSpon = true,
-                                user = GetUserData(nickName),
-                                message = message,
-                                amount = amount
-                            };
-                            AddChatData(chatDatum);
-                        }
-                    }
-                }
+                var htmlChild = (IHTMLElement) htmlElement.children.Item(0);
+                var chat  = new ChatData();
+                ParseHtmlElement(htmlChild,chat);
+                AddChatData(chat);
             }
 
             lastElementIdx = num - 1;
             try
             {
-                IHTMLElement variable4 = (IHTMLElement)((dynamic)root.children).Item(num - 1);
+                var variable4 = (IHTMLElement) root.children.Item(num - 1);
                 lastUniqueNumber = GetElementUniqueNumber(variable4);
             }
             catch

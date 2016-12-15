@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AlcoholV.Tabs
+namespace ChatApp.Tabs
 {
     internal class WindowTab_Setting : IWindowTab
     {
