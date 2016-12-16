@@ -1,37 +1,30 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using ChatApp;
+using ChatApp.Data;
 using mshtml;
 
-namespace ChatApp
+namespace ChatApp.Chat
 {
     internal class ChatBase
     {
         protected HTMLDocument document;
-
-        protected List<ChatData> listNewChat;
-
-        protected Dictionary<string, UserData> mapUser;
-
         protected bool isReady;
-
         protected bool isActive;
+
+        //protected List<ChatData> listNewChat;
+
+        //protected Dictionary<string, UserData> mapUser;
+        private string _platform;
 
         protected void AddChatData(ChatData chatData)
         {
-            listNewChat.Add(chatData);
-        }
-
-        protected void AddChatDataFront(ChatData chatData)
-        {
-            listNewChat.Insert(0, chatData);
+            Console.WriteLine(chatData);
+            Database.Chats.Insert(chatData);
         }
 
         protected IHTMLElement FindClassFromChild(IHTMLElement parent, string className)
         {
-            IHTMLElement variable;
             var enumerator = ((IEnumerable) parent.children).GetEnumerator();
             try
             {
@@ -40,7 +33,7 @@ namespace ChatApp
                     var current = (IHTMLElement) enumerator.Current;
                     if (current.className != className)
                         continue;
-                    variable = current;
+                    var variable = current;
                     return variable;
                 }
                 return null;
@@ -58,34 +51,36 @@ namespace ChatApp
             return ((IHTMLUniqueName) element).uniqueNumber;
         }
 
-        public List<ChatData> GetNewChatList()
-        {
-            return listNewChat;
-        }
-
         protected UserData GetUserData(string username)
         {
-            if (mapUser.ContainsKey(username))
-                return mapUser[username];
-            var userData = new UserData
+            var t = Database.Users.FindOne(x => (x.NickName == username) && (x.Platform == _platform));
+            if (t != null)
+                return t;
+
+            var user = new UserData
             {
-                nickName = username
+                Platform = _platform,
+                NickName = username
             };
-            mapUser.Add(username, userData);
-            OnUserAdded(userData);
-            return userData;
+
+            OnUserAdded(user);
+
+            Database.Users.Insert(user);
+            return user;
         }
 
-        public virtual void Initialize()
+        public virtual void Initialize(string platform)
         {
-            listNewChat = new List<ChatData>();
-            mapUser = new Dictionary<string, UserData>();
+            //listNewChat = new List<ChatData>();
+            //mapUser = new Dictionary<string, UserData>();
+            _platform = platform;
             isReady = false;
             isActive = true;
         }
 
-        protected virtual void OnUserAdded(UserData newUser)
+        protected virtual void OnUserAdded(UserData newUserData)
         {
+            Console.WriteLine($"{"New",-8} {newUserData}");
         }
 
         protected virtual void PrepareUpdate()
@@ -98,8 +93,6 @@ namespace ChatApp
             if (document != null)
                 Marshal.ReleaseComObject(document);
             document = null;
-            listNewChat.Clear();
-            mapUser.Clear();
         }
 
         public void SetActive(bool active)

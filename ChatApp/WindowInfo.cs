@@ -2,12 +2,12 @@ using System;
 
 namespace ChatApp
 {
-	internal class WindowInfo
-	{
-		public string caption;
+    internal class WindowInfo
+    {
+        public string caption;
 
-		public IntPtr hWnd;
+        public IntPtr hWnd;
 
-		public uint pid;
-	}
+        public uint pid;
+    }
 }

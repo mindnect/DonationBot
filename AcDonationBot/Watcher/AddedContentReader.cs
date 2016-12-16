@@ -11,7 +11,7 @@ namespace ChatApp.Watcher
         public AddedContentReader(string fileName, long startPosition = 0)
         {
             //Open the file as FileStream
-            _fileStream = new FileStream(fileName, FileMode.CreateNew, FileAccess.Read, FileShare.ReadWrite);
+            _fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             _reader = new StreamReader(_fileStream);
             //Set the starting position
             _fileStream.Position = startPosition;

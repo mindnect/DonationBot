@@ -1,92 +1,73 @@
-using System;
+﻿using System;
 using System.Collections;
+using System.Linq;
 using System.Text;
+using ChatApp.Chat;
+using ChatApp.Data;
+using HtmlAgilityPack;
 using mshtml;
 
 namespace ChatApp
 {
     internal class ChatTVPot : ChatBase
     {
-        public WindowInfo[] windowPotPlayers;
+        private WindowInfo[] _windowPotPlayers;
+        private int _selectedPotPlayerIdx;
+        private int _lastUniqueNumber;
+        private int _lastElementIdx;
+        private bool _waitForSelect;
+        private IHTMLElement _chatRoot;
 
-        public int selectedPotPlayerIdx;
-
-        private int lastUniqueNumber;
-
-        private int lastElementIdx;
-
-        private bool waitForSelect;
-
-        private IHTMLElement chatRoot;
-
-        private void ParseHtmlElement(IHTMLElement element , ChatData ret)
+        private void Parse(HtmlDocument doc)
         {
-            foreach (var child in element.children)
-            {
-                var current = (IHTMLElement) child;
-                ParseHtmlElement(current, ret);
+            var node = doc.DocumentNode.FirstChild;
+            var attrStr = node.Attributes["class"].Value;
 
-                string message;
-
-                switch (current.className)
+            if (attrStr.Contains("txt_notice"))
+                if (attrStr.Equals("txt_notice area_space box_sticker"))
                 {
-                    case "txt_notice": // 알림
-                        ret.isNotice = true;
-                        break;
-
-                    case "tit_whisper": // 귓속말 아이디
-                    case "tit_name": // 채팅 아이디
-                        if (current.className == "tit_whisper") ret.isWhisper = true;
-
-                        message = current.outerText;
-                        message = message.Split(' ','(')[0];
-                        ret.user.platform = "Daum";
-
-                        if (message[0] == 'P')
-                        {
-                            ret.user.rank = "PD";
-                            message = message.Replace("PD\r\n", "");
-                        }
-                        else if (message[0] == 'A')
-                        {
-                            ret.user.rank = "AD";
-                            message = message.Replace("AD\r\n", "");
-                        }
-                        ret.user.nickName = message;
-                        break;
-
-                    case "info_words": // 채팅 메세지
-                    case "txt_message box_type01": // 후원 메세지
-                    case "info_whisper": // 귓속말 메세지
-                        message = current.outerText;
-                        message = message.Replace("\n", ""); // 후원 메세지 들어올떄 \n 들어옴
-                        ret.message = message;
-                        break;
-
-                    case "txt_money txt_type01": // 후원 금액
-                        ret.isDonation = true;
-                        var amountStr = current.outerText;
-                        amountStr = amountStr.Replace(",", "");
-                        Console.WriteLine(amountStr);
-                        ret.amount = int.Parse(amountStr);
-                        break;
-
-                    case "txt_spon": // 후원자
-                        var nickName = current.outerText.Substring(0, current.outerText.Length - 11);
-                        ret.user.nickName = nickName;
-                        break;
+                    var amount = node.SelectSingleNode("span[@class='area_sticker type_01']").InnerText.Replace(",", "");
+                    var message = node.SelectSingleNode("p[@class='txt_message box_type01']").InnerText.Trim();
+                    var nickname = node.SelectSingleNode("p[@class='txt_spon']").InnerText.Split('님')[0];
+                    Console.WriteLine(nickname + "\t" + message + "\t" + amount);
                 }
-            }
+
+                // todo : 입장, 퇴장, 임명, 해임, 닉변경, 도배경고 파싱
+                else
+                {
+                    var msg = node.SelectSingleNode("text()").InnerText;
+                    Console.WriteLine(msg);
+                }
+
+            // todo : 귓속말 파싱
+            else if (attrStr.Contains("area_chat"))
+                if (node.FirstChild.Attributes["class"].Value == "tit_whisper")
+                {
+                    return;
+                }
+                else
+                {
+                    //<span class="ico_label ico_ad">AD</span>
+                    var nickname = node.SelectSingleNode("strong/text()").InnerText.Split('(')[0].Trim();
+                    var rankNode = node.SelectSingleNode("strong/span");
+                    var rank = "";
+                    if (rankNode.Attributes["class"].Value.Contains("ico_label"))
+                    {
+                        rank = rankNode.InnerText;
+                    }
+
+                    var message = node.SelectSingleNode("div").InnerText.Trim();
+
+                    if (message == "") return; // 이모티콘등과 같이 메세지 없을경우
+                    Console.WriteLine(rank + "\t" + nickname + "\t" + message + "\t");
+                }
         }
-
-
-
 
         private void FindChatRoot()
         {
-            if (selectedPotPlayerIdx != -1)
+            if (_selectedPotPlayerIdx != -1)
             {
-                var intPtr = windowPotPlayers[selectedPotPlayerIdx].hWnd;
+                var intPtr = _windowPotPlayers[_selectedPotPlayerIdx].hWnd;
                 var intPtr1 = FindExplorerHandleByChatWindow(FindChatWindowHandle());
                 if (intPtr1 == IntPtr.Zero)
                 {
@@ -98,10 +79,10 @@ namespace ChatApp
                         if (document == null)
                             continue;
                         var variable = FindChatRoot(document, 50);
-                        if ((variable == null) || (chatRoot != null))
+                        if ((variable == null) || (_chatRoot != null))
                             continue;
                         this.document = document;
-                        chatRoot = variable.parentElement;
+                        _chatRoot = variable.parentElement;
                         isReady = true;
                         //FormCoreWindow.inst.SetChatStatTVPot(ChatStat.Run);
                         return;
@@ -116,7 +97,7 @@ namespace ChatApp
                         if (variable1 != null)
                         {
                             document = document1;
-                            chatRoot = variable1.parentElement;
+                            _chatRoot = variable1.parentElement;
                             isReady = true;
                             //FormCoreWindow.inst.SetChatStatTVPot(ChatStat.Run);
                         }
@@ -160,7 +141,7 @@ namespace ChatApp
                     break;
                 uint num1 = 0;
                 Win32.GetWindowThreadProcessId(zero, out num1);
-                if (num1 == windowPotPlayers[selectedPotPlayerIdx].pid)
+                if (num1 == _windowPotPlayers[_selectedPotPlayerIdx].pid)
                     return zero;
             }
             return IntPtr.Zero;
@@ -191,24 +172,25 @@ namespace ChatApp
 
         public void FindPotplayer()
         {
-            if (waitForSelect)
+            if (_waitForSelect)
                 return;
-            if (selectedPotPlayerIdx == -1)
+            if (_selectedPotPlayerIdx == -1)
             {
                 RefreshPotPlayerHandleList();
-                if (windowPotPlayers.Length == 1)
+                if (_windowPotPlayers.Length == 1)
                 {
-                    selectedPotPlayerIdx = 0;
+                    _selectedPotPlayerIdx = 0;
                 }
-                else if (windowPotPlayers.Length > 1)
+                else if (_windowPotPlayers.Length > 1)
                 {
-                    waitForSelect = true;
+                    _waitForSelect = true;
                     ConsoleSelectPotPlayer();
                     //new FormSelectPotPlayer().Show();
                 }
             }
-            Console.WriteLine(windowPotPlayers[selectedPotPlayerIdx].caption + " 후킹중.");
-            if (selectedPotPlayerIdx == -1)
+
+
+            if (_selectedPotPlayerIdx == -1)
                 return;
             FindChatRoot();
         }
@@ -216,14 +198,14 @@ namespace ChatApp
         private void ConsoleSelectPotPlayer()
         {
             Console.WriteLine("한 개 이상 실행중.");
-            for (var i = 0; i < windowPotPlayers.Length; i++)
+            for (var i = 0; i < _windowPotPlayers.Length; i++)
             {
-                var windowPotPlayer = windowPotPlayers[i];
+                var windowPotPlayer = _windowPotPlayers[i];
                 Console.WriteLine(i + 1 + " : " + windowPotPlayer.caption);
             }
             var UserInput = Console.ReadKey(true);
-            waitForSelect = false;
-            selectedPotPlayerIdx = int.Parse(UserInput.KeyChar.ToString()) - 1;
+            _waitForSelect = false;
+            _selectedPotPlayerIdx = int.Parse(UserInput.KeyChar.ToString()) - 1;
         }
 
         public HTMLDocument GetDocument(IntPtr hWndExplorer)
@@ -247,19 +229,19 @@ namespace ChatApp
             return variable;
         }
 
-        public override void Initialize()
+        public void Init()
         {
-            base.Initialize();
-            selectedPotPlayerIdx = -1;
-            lastUniqueNumber = -1;
-            lastElementIdx = -1;
-            waitForSelect = false;
+            Console.WriteLine("다음팟 후킹 초기화");
+            Initialize("Daum");
+            _selectedPotPlayerIdx = -1;
+            _lastUniqueNumber = -1;
+            _lastElementIdx = -1;
+            _waitForSelect = false;
         }
 
-        protected override void OnUserAdded(UserData newUser)
+        protected override void OnUserAdded(UserData newUserData)
         {
-            base.OnUserAdded(newUser);
-            newUser.platform = "tvpot";
+            base.OnUserAdded(newUserData);
         }
 
         protected override void PrepareUpdate()
@@ -290,26 +272,26 @@ namespace ChatApp
                 intPtrArray[j] = zero;
                 num1++;
             }
-            windowPotPlayers = new WindowInfo[num1];
+            _windowPotPlayers = new WindowInfo[num1];
             var stringBuilder = new StringBuilder(260);
             for (var k = 0; k < num1; k++)
             {
                 Win32.GetWindowText(intPtrArray[k], stringBuilder, 260);
                 uint num2 = 0;
                 Win32.GetWindowThreadProcessId(intPtrArray[k], out num2);
-                windowPotPlayers[k] = new WindowInfo();
-                windowPotPlayers[k].hWnd = intPtrArray[k];
-                windowPotPlayers[k].caption = stringBuilder.ToString();
-                windowPotPlayers[k].pid = num2;
+                _windowPotPlayers[k] = new WindowInfo();
+                _windowPotPlayers[k].hWnd = intPtrArray[k];
+                _windowPotPlayers[k].caption = stringBuilder.ToString();
+                _windowPotPlayers[k].pid = num2;
             }
         }
 
         public override void Reset()
         {
             base.Reset();
-            chatRoot = null;
-            lastUniqueNumber = -1;
-            lastElementIdx = -1;
+            _chatRoot = null;
+            _lastUniqueNumber = -1;
+            _lastElementIdx = -1;
             isReady = false;
         }
 
@@ -330,7 +312,7 @@ namespace ChatApp
 
         private void UpdateChat()
         {
-            UpdateChatRoom(chatRoot);
+            UpdateChatRoom(_chatRoot);
         }
 
         private bool UpdateChatRoom(IHTMLElement root)
@@ -344,51 +326,51 @@ namespace ChatApp
             }
             catch
             {
-                lastElementIdx = -1;
-                lastUniqueNumber = -1;
-                chatRoot = null;
+                _lastElementIdx = -1;
+                _lastUniqueNumber = -1;
+                _chatRoot = null;
                 FindChatRoot();
                 flag = false;
             }
             return flag;
 
             Label0:
-            if (lastElementIdx == -1) lastElementIdx = num - 1;
-            if (lastElementIdx > root.children.length - 1)
+            if (_lastElementIdx == -1) _lastElementIdx = num - 1;
+            if (_lastElementIdx > root.children.length - 1)
             {
                 Console.WriteLine("호출되면 안됩니다.");
                 var num1 = 50;
                 var num2 = num - 1;
                 while (num2 >= num - 1 - num1)
-                    if (GetElementUniqueNumber((IHTMLElement) root.children.Item(num2)) != lastUniqueNumber)
+                    if (GetElementUniqueNumber((IHTMLElement) root.children.Item(num2)) != _lastUniqueNumber)
                     {
                         num2--;
                     }
                     else
                     {
-                        lastElementIdx = num2 + 1;
+                        _lastElementIdx = num2 + 1;
                         break;
                     }
             }
 
 
-            for (var i = lastElementIdx + 1; i < num; i++)
+            for (var i = _lastElementIdx + 1; i < num; i++)
             {
-                var htmlElement = (IHTMLElement) root.children.Item(i);
-                if (htmlElement == null) break;
+                var element = (IHTMLElement) root.children.Item(i);
+                if (element == null) break;
 
+                var doc = new HtmlDocument();
+                doc.LoadHtml(element.innerHTML.Replace("\n",""));
 
-                var htmlChild = (IHTMLElement) htmlElement.children.Item(0);
-                var chat  = new ChatData();
-                ParseHtmlElement(htmlChild,chat);
-                AddChatData(chat);
+                Parse(doc);
             }
 
-            lastElementIdx = num - 1;
+            _lastElementIdx = num - 1;
             try
             {
                 var variable4 = (IHTMLElement) root.children.Item(num - 1);
-                lastUniqueNumber = GetElementUniqueNumber(variable4);
+
+                _lastUniqueNumber = GetElementUniqueNumber(variable4);
             }
             catch
             {

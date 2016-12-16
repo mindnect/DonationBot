@@ -1,42 +1,41 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using ChatApp;
+﻿using System.Threading;
+using LiteDB;
 
 namespace ChatApp
 {
     internal class Program
     {
-        public const string FilePath = "c:\\DonationBot\\Donation.txt";
-
-
         private static void Main(string[] args)
         {
-            var t = new ChatTVPot();
-            t.Initialize();
+            //var query = Chats.Include(x=>x.UserData).FindAll();
+            //foreach (var c in query)
+            //{
+            //    Console.WriteLine(c.ToString());
+            //}
 
+            
+            var t = new ChatTVPot();
+            t.Init();
+            
             while (true)
             {
+                Thread.Sleep(100);
+                ///LiteDB.FileDiskService k = new FileDiskService();
+                
                 t.Update();
-                var list = t.GetNewChatList();
-                var writer = File.AppendText(FilePath);
-                writer.AutoFlush = true;
-                foreach (var chatData in list)
-                {
-                    //Thread.Sleep(100);
-                    //if (chatData.isDonation)
-                    {
-                        //writer.WriteLine(chatData.user.nickName + "\t" + chatData.message + "\t" + chatData.amount);
-                        Console.WriteLine(chatData.user.rank + "\t" + chatData.user.nickName + "\t" + chatData.message + "\t" + chatData.amount);
-                        //writer.WriteLine
-                    }
-                    
-                }
-                list.Clear();
-                writer.Close();
-            }
+                //var list = t.GetNewChatList();
+                //foreach (var chatData in list)
+                //{
+                //    var msg = chatData.ToString();
+                //    Console.WriteLine(msg);
 
-        
+                //    Database.Users.Insert(chatData.UserData);
+                //    Database.Users.EnsureIndex(x => x.NickName);
+
+                //    Database.Chats.Insert(chatData);
+                //}
+                //list.Clear();
+            }
         }
     }
 }

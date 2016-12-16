@@ -49,15 +49,17 @@ namespace ChatApp.Watcher
                 {
                     if (s.Length < 1) continue; // 임시 
 
-                    var text = s.Split('\t');
+                    var text = s.Split('/');
 
-                    var name = text[0];
-                    var msg = text[1];
-                    var amount = text[2];
+                    //Daum / Msg / PD / 알콜V / . / 0
+
+                    var name = text[3];
+                    var msg = text[4];
+                    var amount = text[5];
                     var localDef = IncidentDefOf.RaidEnemy;
                     var money = int.Parse(amount);
-
-                    if ((money > 0 || msg.Contains(" "))) //|| msg.Contains("!테스트"))
+                    
+                    if ((money > 0)) // || msg.Contains(""))) //|| msg.Contains("!테스트"))
                     {
                         Action p = delegate
                         {

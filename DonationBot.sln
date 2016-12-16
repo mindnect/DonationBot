@@ -7,11 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_AcDonationBot", "AcDonatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp\Assembly-CSharp.csproj", "{0662E0C9-C2C0-430B-9165-10FC73B33E44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSAssist", "JSAssist\JSAssist.csproj", "{45EE6E70-938B-43CC-ADF9-FFD864B1FF48}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Refrence", "JSAssist\Refrence.csproj", "{45EE6E70-938B-43CC-ADF9-FFD864B1FF48}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_ChatApp", "ChatApp\_ChatApp.csproj", "{DFA55866-794A-44BC-B458-DAD4F0B311C7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_ChatTest", "ChatTest\_ChatTest.csproj", "{6A81EE31-F6A2-455A-B7CB-20FBA590FD38}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{024CED24-032B-4C38-881E-497574090367}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,7 +36,6 @@ Global
 		{0662E0C9-C2C0-430B-9165-10FC73B33E44}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{0662E0C9-C2C0-430B-9165-10FC73B33E44}.Debug|x86.Build.0 = Debug|Any CPU
 		{0662E0C9-C2C0-430B-9165-10FC73B33E44}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0662E0C9-C2C0-430B-9165-10FC73B33E44}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0662E0C9-C2C0-430B-9165-10FC73B33E44}.Release|x86.ActiveCfg = Release|Any CPU
 		{0662E0C9-C2C0-430B-9165-10FC73B33E44}.Release|x86.Build.0 = Release|Any CPU
 		{45EE6E70-938B-43CC-ADF9-FFD864B1FF48}.Debug|Any CPU.ActiveCfg = Debug|x86
