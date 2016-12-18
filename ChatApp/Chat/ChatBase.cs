@@ -1,26 +1,25 @@
 using System;
 using System.Collections;
 using System.Runtime.InteropServices;
-using ChatApp.Data;
+using Database;
 using mshtml;
 
 namespace ChatApp.Chat
 {
     internal class ChatBase
     {
-        protected HTMLDocument document;
-        protected bool isReady;
-        protected bool isActive;
-
         //protected List<ChatData> listNewChat;
 
         //protected Dictionary<string, UserData> mapUser;
         private string _platform;
+        protected HTMLDocument document;
+        protected bool isActive;
+        protected bool isReady;
 
         protected void AddChatData(ChatData chatData)
         {
             Console.WriteLine(chatData);
-            Database.Chats.Insert(chatData);
+            ChatDB.Chats.Insert(chatData);
         }
 
         protected IHTMLElement FindClassFromChild(IHTMLElement parent, string className)
@@ -53,7 +52,7 @@ namespace ChatApp.Chat
 
         protected UserData GetUserData(string username)
         {
-            var t = Database.Users.FindOne(x => (x.NickName == username) && (x.Platform == _platform));
+            var t = ChatDB.Users.FindOne(x => (x.NickName == username) && (x.Platform == _platform));
             if (t != null)
                 return t;
 
@@ -65,7 +64,7 @@ namespace ChatApp.Chat
 
             OnUserAdded(user);
 
-            Database.Users.Insert(user);
+            ChatDB.Users.Insert(user);
             return user;
         }
 

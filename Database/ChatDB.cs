@@ -1,10 +1,11 @@
 ﻿using LiteDB;
 
-namespace ChatApp.Data
+namespace Database
 {
     public class UserData
     {
         public int Id { get; set; }
+
         public string Platform { get; set; }
         public string Rank { get; set; }
 
@@ -42,7 +43,7 @@ namespace ChatApp.Data
         }
     }
 
-    internal static class Database
+    public static class ChatDB
     {
         public const string DataBasePath = @"c:\\DonationBot\\Donations.DB";
 
