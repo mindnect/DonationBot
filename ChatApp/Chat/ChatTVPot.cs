@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml;
 using Database;
 using HtmlAgilityPack;
 using mshtml;
@@ -117,12 +120,6 @@ namespace ChatApp.Chat
             isReady = false;
         }
 
-        //public void SelectPotPlayerWindow(int idxWindow)
-        //{
-        //    Reset();
-        //    selectedPotPlayerIdx = idxWindow;
-        //    waitForSelect = false;
-        //}
 
         public override bool Update()
         {
@@ -246,6 +243,7 @@ namespace ChatApp.Chat
             return zero;
         }
 
+        
         private void ConsoleSelectPotPlayer()
         {
             Console.WriteLine("한 개 이상 실행중.");
@@ -259,12 +257,17 @@ namespace ChatApp.Chat
             _selectedPotPlayerIdx = int.Parse(userInput.KeyChar.ToString()) - 1;
         }
 
+   
+
         private void Parse(HtmlDocument doc)
         {
             var node = doc.DocumentNode.FirstChild;
-            var attrStr = node.Attributes["class"].Value;
+            var attrStr = node.GetAttributeValue("class", "");
+            var childAttrs = node.GetRecursiveAttributes("class");
+
 
             if (attrStr.Contains("txt_notice"))
+                // 후원
                 if (attrStr.Equals("txt_notice area_space box_sticker"))
                 {
                     var amount = node.SelectSingleNode("span[@class='area_sticker type_01']").InnerText.Replace(",", "");
@@ -280,32 +283,42 @@ namespace ChatApp.Chat
                     Console.WriteLine(msg);
                 }
 
-            // todo : 귓속말 파싱
             else if (attrStr.Contains("area_chat"))
-                if (node.FirstChild.Attributes["class"].Value == "tit_whisper")
+            {
+                if (childAttrs.Any(x => x.Value == "tit_whisper"))
                 {
+                    // 귓속말
+                    //var nickname = node.SelectSingleNode("strong/text()").InnerText.Split('(')[0].Trim();
+                    //var rankNode = node.SelectSingleNode("strong/span");
+                    //var rank = "";
+                    //if (rankNode.Attributes["class"].Value.Contains("ico_label"))
+                    //    rank = rankNode.InnerText;
+
+                    //var message = node.SelectSingleNode("div").InnerText.Trim();
+
+                    //if (message == "") return; // 이모티콘등과 같이 메세지 없을경우
+                    //Console.WriteLine(rank + "\t" + nickname + "\t" + message + "\t");
+
                 }
-                else
+                else if(childAttrs.Any(x => x.Value == "tit_name"))
                 {
-                    //<span class="ico_label ico_ad">AD</span>
                     var nickname = node.SelectSingleNode("strong/text()").InnerText.Split('(')[0].Trim();
-                    var rankNode = node.SelectSingleNode("strong/span");
+
                     var rank = "";
-                    if (rankNode.Attributes["class"].Value.Contains("ico_label"))
-                        rank = rankNode.InnerText;
-
+                    rank = node.SelectSingleNode(@"strong/span[starts-with(@class,'ico_label')]")?.InnerText;
                     var message = node.SelectSingleNode("div").InnerText.Trim();
-
                     if (message == "") return; // 이모티콘등과 같이 메세지 없을경우
                     Console.WriteLine(rank + "\t" + nickname + "\t" + message + "\t");
                 }
+
+            }
         }
 
         private void UpdateChat()
         {
             UpdateChatRoom(_chatRoot);
         }
-
+        
         private bool UpdateChatRoom(IHTMLElement root)
         {
             bool flag;
@@ -350,9 +363,10 @@ namespace ChatApp.Chat
                 var element = (IHTMLElement) root.children.Item(i);
                 if (element == null) break;
 
-                var doc = new HtmlDocument();
-                doc.LoadHtml(element.innerHTML.Replace("\n", ""));
+                var linearize = Regex.Replace(element.innerHTML, @"\r\n?|\n", "");
 
+                var doc = new HtmlDocument();
+                doc.LoadHtml(linearize);
                 Parse(doc);
             }
 

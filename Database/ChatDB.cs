@@ -1,4 +1,6 @@
-﻿using LiteDB;
+﻿using System;
+using System.IO;
+using LiteDB;
 
 namespace Database
 {
@@ -45,11 +47,26 @@ namespace Database
 
     public static class ChatDB
     {
-        public const string DataBasePath = @"c:\\DonationBot\\Donations.DB";
+        public const string DbFilePath = @"c:\DonationBot\";
+        public const string DbFileName = @"Donations.DB";
 
-        public static LiteDatabase Db { get; set; } = new LiteDatabase(DataBasePath);
-        public static LiteCollection<UserData> Users { get; set; } = Db.GetCollection<UserData>("Users");
-        public static LiteCollection<ChatData> Chats { get; set; } = Db.GetCollection<ChatData>("Chats").Include(x => x.UserData);
-        public static LiteCollection<DonationData> Donations { get; set; } = Db.GetCollection<DonationData>("Donations").Include(x => x.UserData);
+        static ChatDB()
+        {
+            // Watch 초기화
+            var watcher = new FileSystemWatcher
+            {
+                Path = DbFilePath,
+                NotifyFilter = NotifyFilters.LastWrite,
+                Filter = DbFileName,
+                EnableRaisingEvents = true
+            };
+        }
+
+        public static readonly LiteDatabase DB = new LiteDatabase(DbFilePath+DbFileName);
+        public static FileSystemWatcher Watcher { get; }
+
+        public static LiteCollection<UserData> Users { get; } = DB.GetCollection<UserData>("Users");
+        public static LiteCollection<ChatData> Chats { get; } = DB.GetCollection<ChatData>("Chats").Include(x => x.UserData);
+        public static LiteCollection<DonationData> Donations { get; } = DB.GetCollection<DonationData>("Donations").Include(x => x.UserData);
     }
 }
