@@ -47,7 +47,7 @@ namespace ChatApp.Chat
 
         protected int GetElementUniqueNumber(IHTMLElement element)
         {
-            return ((IHTMLUniqueName) element).uniqueNumber;
+            return ((IHTMLUniqueName) element).uniqueNumber;;
         }
 
         protected UserData GetUserData(string username)
