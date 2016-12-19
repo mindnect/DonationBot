@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml;
 using Database;
 using HtmlAgilityPack;
 using mshtml;
@@ -71,7 +72,7 @@ namespace ChatApp.Chat
                     // MessageBox.Show("Couldn't Found Document", "Warning");
                 }
             }
-            Console.WriteLine("Find Document");
+            Console.WriteLine("Found Document");
             return variable;
         }
 
@@ -161,6 +162,7 @@ namespace ChatApp.Chat
                         _chatRoot = variable.parentElement;
                         isReady = true;
                         //FormCoreWindow.inst.SetChatStatTVPot(ChatStat.Run);
+                        isReady = true;
                         return;
                     }
                 }
@@ -174,7 +176,7 @@ namespace ChatApp.Chat
                         {
                             document = document1;
                             _chatRoot = variable1.parentElement;
-                            isReady = true;
+
                             //FormCoreWindow.inst.SetChatStatTVPot(ChatStat.Run);
                         }
                     }
@@ -184,6 +186,7 @@ namespace ChatApp.Chat
 
         private IHTMLElement FindChatRoot(HTMLDocument tempDocument, int maxAttemptCount)
         {
+          
             var num = maxAttemptCount;
             foreach (var child in (IEnumerable) tempDocument.body.children)
             {
@@ -196,6 +199,8 @@ namespace ChatApp.Chat
                     var num1 = 0;
                     foreach (var obj in (IEnumerable) variable.children)
                         num1++;
+
+                    Console.WriteLine("Found Chat Document");
                     return variable;
                 }
                 return null;
@@ -243,7 +248,7 @@ namespace ChatApp.Chat
             return zero;
         }
 
-        
+
         private void ConsoleSelectPotPlayer()
         {
             Console.WriteLine("한 개 이상 실행중.");
@@ -257,22 +262,22 @@ namespace ChatApp.Chat
             _selectedPotPlayerIdx = int.Parse(userInput.KeyChar.ToString()) - 1;
         }
 
-   
 
         private void Parse(HtmlDocument doc)
         {
             var node = doc.DocumentNode.FirstChild;
             var attrStr = node.GetAttributeValue("class", "");
-            var childAttrs = node.GetRecursiveAttributes("class");
+            var childs = node.GetRecursiveAttributes("class").ToDictionary(x => x.Value.Split()[0], x => x.OwnerNode.SelectSingleNode("text()")?.InnerText);
 
-
+            // 알림
             if (attrStr.Contains("txt_notice"))
                 // 후원
                 if (attrStr.Equals("txt_notice area_space box_sticker"))
                 {
-                    var amount = node.SelectSingleNode("span[@class='area_sticker type_01']").InnerText.Replace(",", "");
-                    var message = node.SelectSingleNode("p[@class='txt_message box_type01']").InnerText.Trim();
-                    var nickname = node.SelectSingleNode("p[@class='txt_spon']").InnerText.Split('님')[0];
+                    var nickname = childs.GetValueOrDefault("txt_spon", "").Split('님')[0];
+                    var amount = childs.GetValueOrDefault("txt_money", "").Replace(",", "");
+                    var message = childs.GetValueOrDefault("txt_message", "").Trim();
+
                     Console.WriteLine(nickname + "\t" + message + "\t" + amount);
                 }
 
@@ -283,34 +288,31 @@ namespace ChatApp.Chat
                     Console.WriteLine(msg);
                 }
 
+            // 메세지
             else if (attrStr.Contains("area_chat"))
             {
-                if (childAttrs.Any(x => x.Value == "tit_whisper"))
+                var nickname = "";
+                var rank = "";
+                var message = "";
+
+                // 채팅
+                if (childs.ContainsKey("tit_name"))
                 {
-                    // 귓속말
-                    //var nickname = node.SelectSingleNode("strong/text()").InnerText.Split('(')[0].Trim();
-                    //var rankNode = node.SelectSingleNode("strong/span");
-                    //var rank = "";
-                    //if (rankNode.Attributes["class"].Value.Contains("ico_label"))
-                    //    rank = rankNode.InnerText;
-
-                    //var message = node.SelectSingleNode("div").InnerText.Trim();
-
-                    //if (message == "") return; // 이모티콘등과 같이 메세지 없을경우
-                    //Console.WriteLine(rank + "\t" + nickname + "\t" + message + "\t");
-
-                }
-                else if(childAttrs.Any(x => x.Value == "tit_name"))
-                {
-                    var nickname = node.SelectSingleNode("strong/text()").InnerText.Split('(')[0].Trim();
-
-                    var rank = "";
-                    rank = node.SelectSingleNode(@"strong/span[starts-with(@class,'ico_label')]")?.InnerText;
-                    var message = node.SelectSingleNode("div").InnerText.Trim();
-                    if (message == "") return; // 이모티콘등과 같이 메세지 없을경우
-                    Console.WriteLine(rank + "\t" + nickname + "\t" + message + "\t");
+                    nickname = childs.GetValueOrDefault("tit_name", "").Split('(')[0].Trim();
+                    rank = childs.GetValueOrDefault("ico_label", "");
+                    message = childs.GetValueOrDefault("info_words", "").Trim();
                 }
 
+                // 쪽지
+                else if (childs.ContainsKey("tit_whisper"))
+                {
+                    nickname = childs.GetValueOrDefault("tit_whisper", "").Split('(')[0].Trim();
+                    message = childs.GetValueOrDefault("info_whisper", "").Trim();
+                }
+
+                if (message == "") return; // 이모티콘등과 같이 메세지 없을경우
+
+                Console.WriteLine(rank + "\t" + nickname + "\t" + message + "\t");
             }
         }
 
@@ -318,7 +320,7 @@ namespace ChatApp.Chat
         {
             UpdateChatRoom(_chatRoot);
         }
-        
+
         private bool UpdateChatRoom(IHTMLElement root)
         {
             bool flag;
@@ -360,9 +362,11 @@ namespace ChatApp.Chat
 
             for (var i = _lastElementIdx + 1; i < num; i++)
             {
+           
+
                 var element = (IHTMLElement) root.children.Item(i);
                 if (element == null) break;
-
+              
                 var linearize = Regex.Replace(element.innerHTML, @"\r\n?|\n", "");
 
                 var doc = new HtmlDocument();
@@ -382,5 +386,88 @@ namespace ChatApp.Chat
             }
             return false;
         }
+    }
+
+
+    internal class HtmlHandler : IReflect
+    {
+        private readonly EventHandler eventHandler;
+
+
+        private readonly IReflect typeIReflectImplementation = typeof(HtmlHandler);
+
+        public HtmlHandler(EventHandler evHandler)
+        {
+            eventHandler = evHandler;
+        }
+
+
+        #region IReflect
+
+        FieldInfo IReflect.GetField(string name, BindingFlags bindingAttr)
+        {
+            return typeIReflectImplementation.GetField(name, bindingAttr);
+        }
+
+        FieldInfo[] IReflect.GetFields(BindingFlags bindingAttr)
+        {
+            return typeIReflectImplementation.GetFields(bindingAttr);
+        }
+
+        MemberInfo[] IReflect.GetMember(string name, BindingFlags bindingAttr)
+        {
+            return typeIReflectImplementation.GetMember(name, bindingAttr);
+        }
+
+        MemberInfo[] IReflect.GetMembers(BindingFlags bindingAttr)
+        {
+            return typeIReflectImplementation.GetMembers(bindingAttr);
+        }
+
+        MethodInfo IReflect.GetMethod(string name, BindingFlags bindingAttr)
+        {
+            return typeIReflectImplementation.GetMethod(name, bindingAttr);
+        }
+
+        MethodInfo IReflect.GetMethod(string name, BindingFlags bindingAttr, Binder binder, Type[] types, ParameterModifier[] modifiers)
+        {
+            return typeIReflectImplementation.GetMethod(name, bindingAttr, binder, types, modifiers);
+        }
+
+        MethodInfo[] IReflect.GetMethods(BindingFlags bindingAttr)
+        {
+            return typeIReflectImplementation.GetMethods(bindingAttr);
+        }
+
+        PropertyInfo[] IReflect.GetProperties(BindingFlags bindingAttr)
+        {
+            return typeIReflectImplementation.GetProperties(bindingAttr);
+        }
+
+        PropertyInfo IReflect.GetProperty(string name, BindingFlags bindingAttr)
+        {
+            return typeIReflectImplementation.GetProperty(name, bindingAttr);
+        }
+
+        PropertyInfo IReflect.GetProperty(string name, BindingFlags bindingAttr, Binder binder, Type returnType, Type[] types, ParameterModifier[] modifiers)
+        {
+            return typeIReflectImplementation.GetProperty(name, bindingAttr, binder, returnType, types, modifiers);
+        }
+
+        object IReflect.InvokeMember(string name, BindingFlags invokeAttr, Binder binder, object target, object[] args, ParameterModifier[] modifiers, CultureInfo culture, string[] namedParameters)
+        {
+            if (name == "[DISPID=0]")
+                if (eventHandler != null)
+                    eventHandler(this, EventArgs.Empty);
+
+            return null;
+        }
+
+        Type IReflect.UnderlyingSystemType
+        {
+            get { return typeIReflectImplementation.UnderlyingSystemType; }
+        }
+
+        #endregion
     }
 }
