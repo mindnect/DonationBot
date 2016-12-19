@@ -162,7 +162,6 @@ namespace ChatApp.Chat
                         _chatRoot = variable.parentElement;
                         isReady = true;
                         //FormCoreWindow.inst.SetChatStatTVPot(ChatStat.Run);
-                        isReady = true;
                         return;
                     }
                 }
@@ -176,7 +175,7 @@ namespace ChatApp.Chat
                         {
                             document = document1;
                             _chatRoot = variable1.parentElement;
-
+                            isReady = true;
                             //FormCoreWindow.inst.SetChatStatTVPot(ChatStat.Run);
                         }
                     }
