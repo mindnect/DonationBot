@@ -28,7 +28,7 @@ namespace ChatApp.Chat
 
         public void SelectPotPlayer()
         {
-            Console.WriteLine("팟플레이어 선택중");
+            Console.WriteLine("\n팟플레이어 선택중");
 
             if (_windowPotPlayers.Length < 1)
             {
@@ -72,6 +72,7 @@ namespace ChatApp.Chat
         public void FindPotPlayer()
         {
             Console.Write("팟플레이어 찾는중");
+            bool found = false;
             while (true)
             {
                 Thread.Sleep(100);
@@ -108,10 +109,11 @@ namespace ChatApp.Chat
                     _windowPotPlayers[k].hWnd = intPtrArray[k];
                     _windowPotPlayers[k].caption = stringBuilder.ToString();
                     _windowPotPlayers[k].pid = num2;
-                    Console.WriteLine("\n팟플레이어를 찾았습니다.");
-
-                    return;
+                    Console.Write("\n팟플레이어를 찾았습니다.");
+                    found = true;
                 }
+
+                if (found) return;
             }
         }
 
@@ -295,7 +297,7 @@ namespace ChatApp.Chat
 
         private void ConsoleSelectPotPlayer()
         {
-            Console.WriteLine("\n하나 이상의 팟플레이어 실행중");
+            Console.WriteLine("하나 이상의 팟플레이어 실행중");
             for (var i = 0; i < _windowPotPlayers.Length; i++)
             {
                 var windowPotPlayer = _windowPotPlayers[i];
