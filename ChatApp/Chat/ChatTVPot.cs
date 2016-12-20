@@ -315,7 +315,7 @@ namespace ChatApp.Chat
             var node = doc.DocumentNode.FirstChild;
             var attrStr = node.GetAttributeValue("class", "");
             var childs = node.GetRecursiveAttributes("class").ToDictionary(x => x.Value.Split()[0], x => x.OwnerNode.SelectSingleNode("text()")?.InnerText);
-
+            
             // 알림
             if (attrStr.Contains("txt_notice"))
                 // 후원

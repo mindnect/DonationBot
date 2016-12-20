@@ -1,24 +1,24 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Database;
-using LiteDB;
 using mshtml;
 
 namespace ChatApp.Chat
 {
     internal class ChatBase
     {
-        //protected List<ChatData> listNewChat;
-
-        //protected Dictionary<string, UserData> mapUser;
         private string _platform;
         protected HTMLDocument document;
         protected bool isActive;
         protected bool isReady;
+        //protected List<ChatData> listNewChat;
+        protected Dictionary<string, UserData> mapUser;
 
         public virtual void Reset()
         {
             isReady = false;
+            mapUser.Clear();
             if (document != null)
                 Marshal.ReleaseComObject(document);
             document = null;
@@ -43,6 +43,7 @@ namespace ChatApp.Chat
 
         protected void Init(string platform)
         {
+            mapUser = new Dictionary<string, UserData>();
             _platform = platform;
             isReady = false;
             isActive = true;
@@ -50,8 +51,7 @@ namespace ChatApp.Chat
 
         protected void AddChatData(ChatData chatData)
         {
-            Console.WriteLine(chatData);
-            ChatDB.Chats.Insert(chatData);
+            Console.WriteLine(chatData.ToString());
         }
 
         protected int GetElementUniqueNumber(IHTMLElement element)
@@ -61,14 +61,8 @@ namespace ChatApp.Chat
 
         protected UserData GetUserData(string username, string rank = null)
         {
-            var ret = ChatDB.Users.FindOne(x => (x.NickName == username) && (x.Platform == _platform));
-            if (ret != null)
-            {
-                if (rank!=null) ret.Rank = rank;
-                ChatDB.Users.Update(ret);
-                return ret;
-            }
-
+            if (mapUser.ContainsKey(username))
+                return mapUser[username];
             var user = new UserData
             {
                 Platform = _platform,
@@ -77,7 +71,6 @@ namespace ChatApp.Chat
             };
 
             OnUserAdded(user);
-            ChatDB.Users.Insert(user);
             return user;
         }
 
