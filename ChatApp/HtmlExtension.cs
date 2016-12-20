@@ -31,7 +31,7 @@ namespace ChatApp
         public static TValue GetValueOrDefault<TKey, TValue> (this IDictionary<TKey, TValue> dictionary, TKey key, Func<TValue> defaultValueProvider)
         {
             TValue value;
-            return dictionary.TryGetValue(key, out value) ? value : defaultValueProvider();
+            return dictionary.TryGetValue(key, out value) ? (value == null ? defaultValueProvider() : value) : defaultValueProvider();
         }
     }
 }

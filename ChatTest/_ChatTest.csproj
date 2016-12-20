@@ -33,28 +33,24 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LiteDB, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\LiteDB.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="ChatTestProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Database\_Database.csproj">
-      <Project>{64D67FBA-9086-4E63-8D76-1E011B57EDF4}</Project>
-      <Name>_Database</Name>
-    </ProjectReference>
+    <Content Include="TestPage.html" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestPage.html" />
+    <ProjectReference Include="..\Database\_ChatDB.csproj">
+      <Project>{64d67fba-9086-4e63-8d76-1e011b57edf4}</Project>
+      <Name>_ChatDB</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

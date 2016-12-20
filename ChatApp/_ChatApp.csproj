@@ -56,10 +56,6 @@
       <HintPath>..\packages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LiteDB, Version=2.0.4.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\LiteDB.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
@@ -72,7 +68,7 @@
     <Compile Include="Chat\ChatBase.cs" />
     <Compile Include="Chat\ChatTVPot.cs" />
     <Compile Include="HtmlExtension.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="ChatAppProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Win32.cs" />
     <Compile Include="WindowInfo.cs" />
@@ -85,9 +81,9 @@
     <Content Include="_Document\메세지양식.html" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Database\_Database.csproj">
+    <ProjectReference Include="..\Database\_ChatDB.csproj">
       <Project>{64d67fba-9086-4e63-8d76-1e011b57edf4}</Project>
-      <Name>_Database</Name>
+      <Name>_ChatDB</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

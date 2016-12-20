@@ -20,7 +20,7 @@ namespace ChatApp.Chat
         public void Init()
         {
             Console.WriteLine("다음팟 후킹 초기화 중");
-            Initialize("Daum");
+            base.Init("Daum");
             _selectedPotPlayerIdx = -1;
             _currIndex = -1;
             Console.WriteLine("다음팟 후킹 초기화 완료");
@@ -48,7 +48,7 @@ namespace ChatApp.Chat
         public HTMLDocument GetHtmlDocument(IntPtr hWndExplorer)
         {
             HTMLDocument htmlDocument = null;
-            var num1 = 0;
+            int num1;
             num1 = Win32.RegisterWindowMessage("WM_HTML_GETOBJECT");
             if (num1 != 0)
             {
@@ -103,12 +103,14 @@ namespace ChatApp.Chat
                 for (var k = 0; k < num1; k++)
                 {
                     Win32.GetWindowText(intPtrArray[k], stringBuilder, 260);
-                    uint num2 = 0;
+                    uint num2;
                     Win32.GetWindowThreadProcessId(intPtrArray[k], out num2);
-                    _windowPotPlayers[k] = new WindowInfo();
-                    _windowPotPlayers[k].hWnd = intPtrArray[k];
-                    _windowPotPlayers[k].caption = stringBuilder.ToString();
-                    _windowPotPlayers[k].pid = num2;
+                    _windowPotPlayers[k] = new WindowInfo
+                    {
+                        hWnd = intPtrArray[k],
+                        caption = stringBuilder.ToString(),
+                        pid = num2
+                    };
                     Console.Write("\n팟플레이어를 찾았습니다.");
                     found = true;
                 }
@@ -131,7 +133,7 @@ namespace ChatApp.Chat
             if (!base.Update())
                 return false;
 
-            var length = -1;
+            int length;
             try
             {
                 length = (int) _chatRoot.children.length;
@@ -145,11 +147,10 @@ namespace ChatApp.Chat
                 return false;
             }
 
-            var lastIndex = length - 1;
             if (_currIndex == -1)
-                _currIndex = lastIndex;
+                _currIndex = length;
 
-            while (_currIndex <= lastIndex)
+            while (_currIndex <length)
             {
                 var element = (IHTMLElement) _chatRoot.children.Item(_currIndex);
                 var linearize = Regex.Replace(element.innerHTML, @"\r\n?|\n", "");
@@ -157,15 +158,16 @@ namespace ChatApp.Chat
                 {
                     var doc = new HtmlDocument();
                     doc.LoadHtml(linearize);
-                    try
-                    {
+                    //try
+                    //{
                         Parse(doc);
-                    }
-                    catch
-                    {
-                        Console.WriteLine("Error : " + element.innerHTML);
-                        Console.WriteLine("Error : " + linearize);
-                    }
+                    //}
+                    //catch(Exception ex)
+                    //{
+                    //    Console.WriteLine(ex.ToString());
+                    //    Console.WriteLine("Error : " + element.innerHTML);
+                    //    Console.WriteLine("Error : " + linearize);
+                    //}
                 }
                 _currIndex++;
             }
@@ -262,7 +264,7 @@ namespace ChatApp.Chat
                 zero = Win32.FindWindowEx(IntPtr.Zero, zero, null, "채팅/덧글");
                 if (zero == IntPtr.Zero)
                     break;
-                uint num1 = 0;
+                uint num1;
                 Win32.GetWindowThreadProcessId(zero, out num1);
                 if (num1 == _windowPotPlayers[_selectedPotPlayerIdx].pid)
                     return zero;
@@ -313,15 +315,28 @@ namespace ChatApp.Chat
             var node = doc.DocumentNode.FirstChild;
             var attrStr = node.GetAttributeValue("class", "");
             var childs = node.GetRecursiveAttributes("class").ToDictionary(x => x.Value.Split()[0], x => x.OwnerNode.SelectSingleNode("text()")?.InnerText);
+
             // 알림
             if (attrStr.Contains("txt_notice"))
                 // 후원
                 if (attrStr.Equals("txt_notice area_space box_sticker"))
                 {
                     var nickname = childs.GetValueOrDefault("txt_spon", "").Split('님')[0];
-                    var amount = childs.GetValueOrDefault("txt_money", "").Replace(",", "");
+                    var amount = childs.GetValueOrDefault("txt_money", "0").Replace(",", "");
                     var message = childs.GetValueOrDefault("txt_message", "").Trim();
 
+                    var iAmount = 0;
+                    int.TryParse(amount, out iAmount);
+
+                    var donationData = new DonationData
+                    {
+                        Amount = iAmount,
+                        Message = message,
+                        UserData = GetUserData(nickname)
+                    };
+
+
+                    AddChatData(donationData);
                     Console.WriteLine(nickname + "\t" + message + "\t" + amount);
                 }
 
@@ -350,13 +365,21 @@ namespace ChatApp.Chat
                 // 쪽지
                 else if (childs.ContainsKey("tit_whisper"))
                 {
-                    nickname = childs.GetValueOrDefault("tit_whisper", "").Split('(')[0].Trim();
-                    message = childs.GetValueOrDefault("info_whisper", "").Trim();
+                    //nickname = childs.GetValueOrDefault("tit_whisper", "").Split('(')[0].Trim();
+                    //message = childs.GetValueOrDefault("info_whisper", "").Trim();
                 }
 
                 if (message == "") return; // 이모티콘등과 같이 메세지 없을경우
 
-                Console.WriteLine(rank + "\t" + nickname + "\t" + message + "\t");
+                var chatData = new ChatData
+                {
+                    Message = message,
+                    UserData = GetUserData(nickname, rank)
+                };
+
+                AddChatData(chatData);
+
+                //Console.WriteLine(rank + "\t" + nickname + "\t" + message + "\t");
             }
         }
     }

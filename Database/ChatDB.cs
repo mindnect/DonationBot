@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Net;
 using LiteDB;
 
 namespace Database
@@ -45,28 +47,52 @@ namespace Database
         }
     }
 
-    public static class ChatDB
+    public class ChatDB
     {
-        public const string DbFilePath = @"c:\DonationBot\";
-        public const string DbFileName = @"Donations.DB";
+        public const string FilePath = @"c:\ChatDB\";
+        public const string FileName = @"database.db";
+        public const string FullPath = FilePath + FileName;
+        public static LiteDatabase DB { get; private set; }
 
         static ChatDB()
         {
-            // Watch 초기화
+            try
+            {
+                Directory.CreateDirectory(FilePath);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
             var watcher = new FileSystemWatcher
             {
-                Path = DbFilePath,
+                Path = FilePath,
                 NotifyFilter = NotifyFilters.LastWrite,
-                Filter = DbFileName,
+                Filter = FileName,
                 EnableRaisingEvents = true
             };
+            
+            DB = new LiteDatabase(FullPath);
+            //var t = "filename=" + FullPath + ";Autocommit=false";
+
         }
 
-        public static readonly LiteDatabase DB = new LiteDatabase(DbFilePath+DbFileName);
         public static FileSystemWatcher Watcher { get; }
 
-        public static LiteCollection<UserData> Users { get; } = DB.GetCollection<UserData>("Users");
-        public static LiteCollection<ChatData> Chats { get; } = DB.GetCollection<ChatData>("Chats").Include(x => x.UserData);
-        public static LiteCollection<DonationData> Donations { get; } = DB.GetCollection<DonationData>("Donations").Include(x => x.UserData);
+        public static LiteCollection<UserData> Users => DB.GetCollection<UserData>("Users");
+        public static LiteCollection<ChatData> Chats => DB.GetCollection<ChatData>("Chats").Include(x => x.UserData);
+
+        public static void Reset()
+        {
+            
+            if (File.Exists(FullPath))
+            {
+                DB.DropCollection("Users");
+                DB.DropCollection("Chats");
+                DB.DropCollection("Donations");
+            }
+        }
     }
 }
