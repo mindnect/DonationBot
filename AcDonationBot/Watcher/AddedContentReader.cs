@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace ChatApp.Watcher
+namespace Data.Watcher
 {
     public class AddedContentReader
     {

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Database;
+using Data;
 using mshtml;
+using WebSocketSharp;
 
 namespace ChatApp.Chat
 {
@@ -12,8 +13,7 @@ namespace ChatApp.Chat
         protected HTMLDocument document;
         protected bool isActive;
         protected bool isReady;
-        //protected List<ChatData> listNewChat;
-        protected Dictionary<string, UserData> mapUser;
+        protected Dictionary<string, UserEntity> mapUser;
 
         public virtual void Reset()
         {
@@ -43,15 +43,10 @@ namespace ChatApp.Chat
 
         protected void Init(string platform)
         {
-            mapUser = new Dictionary<string, UserData>();
+            mapUser = new Dictionary<string, UserEntity>();
             _platform = platform;
             isReady = false;
             isActive = true;
-        }
-
-        protected void AddChatData(ChatData chatData)
-        {
-            Console.WriteLine(chatData.ToString());
         }
 
         protected int GetElementUniqueNumber(IHTMLElement element)
@@ -59,24 +54,25 @@ namespace ChatApp.Chat
             return ((IHTMLUniqueName) element).uniqueNumber;
         }
 
-        protected UserData GetUserData(string username, string rank = null)
+        protected UserEntity GetUserData(string username, string rank = null)
         {
             if (mapUser.ContainsKey(username))
                 return mapUser[username];
-            var user = new UserData
+
+            var user = new UserEntity
             {
                 Platform = _platform,
                 Rank = rank,
-                NickName = username
+                Nickname = username
             };
-
+            mapUser.Add(username,user);
             OnUserAdded(user);
             return user;
         }
 
-        protected virtual void OnUserAdded(UserData newUserData)
+        protected virtual void OnUserAdded(UserEntity newUserEntity)
         {
-            Console.WriteLine($"{"New",-8} {newUserData}");
+            Console.WriteLine($"{"New",-8} {newUserEntity}");
         }
 
         protected virtual void PrepareUpdate()

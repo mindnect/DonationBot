@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ChatApp.Incident;
+using Data.Incident;
 using RimWorld;
 using Verse;
 
-namespace ChatApp.Watcher
+namespace Data.Watcher
 {
     internal class Watcher : MapComponent
     {

@@ -3,8 +3,9 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using Database;
+using ChatApp.AppServer;
+using ChatApp.Win32;
+using Data;
 using HtmlAgilityPack;
 using mshtml;
 
@@ -31,33 +32,26 @@ namespace ChatApp.Chat
             Console.WriteLine("\n팟플레이어 선택중");
 
             if (_windowPotPlayers.Length < 1)
-            {
                 _selectedPotPlayerIdx = -1;
-            }
             else if (_windowPotPlayers.Length == 1)
-            {
                 _selectedPotPlayerIdx = 0;
-            }
             else if (_windowPotPlayers.Length > 1)
-            {
                 ConsoleSelectPotPlayer();
-                //new FormSelectPotPlayer().Show();
-            }
         }
 
         public HTMLDocument GetHtmlDocument(IntPtr hWndExplorer)
         {
             HTMLDocument htmlDocument = null;
             int num1;
-            num1 = Win32.RegisterWindowMessage("WM_HTML_GETOBJECT");
+            num1 = Win32.Win32.RegisterWindowMessage("WM_HTML_GETOBJECT");
             if (num1 != 0)
             {
                 //Console.WriteLine("Get Explorer Document");
                 int num;
-                Win32.SendMessageTimeout(hWndExplorer, num1, 0, 0, 2, 1000, out num);
+                Win32.Win32.SendMessageTimeout(hWndExplorer, num1, 0, 0, 2, 1000, out num);
                 if (num != 0)
                 {
-                    Win32.ObjectFromLresult(num, ref Win32.IID_IHTMLDocument, 0, ref htmlDocument);
+                    Win32.Win32.ObjectFromLresult(num, ref Win32.Win32.IID_IHTMLDocument, 0, ref htmlDocument);
                     if (htmlDocument == null) Console.WriteLine("채팅 오브젝트를 찾을 수 없습니다.");
                     // MessageBox.Show("Couldn't Found Document", "Warning");
                 }
@@ -69,54 +63,48 @@ namespace ChatApp.Chat
             return htmlDocument;
         }
 
-        public void FindPotPlayer()
+        public bool FindPotPlayer()
         {
-            Console.Write("팟플레이어 찾는중");
-            bool found = false;
-            while (true)
+            Console.Write(".");
+            var ret = false;
+
+            var num = 10;
+            var intPtrArray = new IntPtr[num];
+            var num1 = 0;
+            var zero = IntPtr.Zero;
+            for (var i = 0; i < num; i++)
             {
-                Thread.Sleep(100);
-                Console.Write(".");
-
-                var num = 10;
-                var intPtrArray = new IntPtr[num];
-                var num1 = 0;
-                var zero = IntPtr.Zero;
-                for (var i = 0; i < num; i++)
-                {
-                    zero = Win32.FindWindowEx(IntPtr.Zero, zero, "PotPlayer", null);
-                    if (zero == IntPtr.Zero)
-                        break;
-                    intPtrArray[i] = zero;
-                    num1++;
-                }
-                for (var j = num1; j < num; j++)
-                {
-                    zero = Win32.FindWindowEx(IntPtr.Zero, zero, "PotPlayer64", null);
-                    if (zero == IntPtr.Zero)
-                        break;
-                    intPtrArray[j] = zero;
-                    num1++;
-                }
-                _windowPotPlayers = new WindowInfo[num1];
-                var stringBuilder = new StringBuilder(260);
-                for (var k = 0; k < num1; k++)
-                {
-                    Win32.GetWindowText(intPtrArray[k], stringBuilder, 260);
-                    uint num2;
-                    Win32.GetWindowThreadProcessId(intPtrArray[k], out num2);
-                    _windowPotPlayers[k] = new WindowInfo
-                    {
-                        hWnd = intPtrArray[k],
-                        caption = stringBuilder.ToString(),
-                        pid = num2
-                    };
-                    Console.Write("\n팟플레이어를 찾았습니다.");
-                    found = true;
-                }
-
-                if (found) return;
+                zero = Win32.Win32.FindWindowEx(IntPtr.Zero, zero, "PotPlayer", null);
+                if (zero == IntPtr.Zero)
+                    break;
+                intPtrArray[i] = zero;
+                num1++;
             }
+            for (var j = num1; j < num; j++)
+            {
+                zero = Win32.Win32.FindWindowEx(IntPtr.Zero, zero, "PotPlayer64", null);
+                if (zero == IntPtr.Zero)
+                    break;
+                intPtrArray[j] = zero;
+                num1++;
+            }
+            _windowPotPlayers = new WindowInfo[num1];
+            var stringBuilder = new StringBuilder(260);
+            for (var k = 0; k < num1; k++)
+            {
+                Win32.Win32.GetWindowText(intPtrArray[k], stringBuilder, 260);
+                uint num2;
+                Win32.Win32.GetWindowThreadProcessId(intPtrArray[k], out num2);
+                _windowPotPlayers[k] = new WindowInfo
+                {
+                    hWnd = intPtrArray[k],
+                    caption = stringBuilder.ToString(),
+                    pid = num2
+                };
+                Console.Write("\n팟플레이어를 찾았습니다.");
+                ret = true;
+            }
+            return ret;
         }
 
         public override void Reset()
@@ -148,41 +136,36 @@ namespace ChatApp.Chat
             }
 
             if (_currIndex == -1)
-                _currIndex = length;
+                _currIndex = length-1;
 
-            while (_currIndex <length)
+            var currUniqueNumber = GetElementUniqueNumber((IHTMLElement)_chatRoot.children.Item(_currIndex)); // 80
+            var lastUniqueNumber = GetElementUniqueNumber((IHTMLElement)_chatRoot.children.Item(length-1)); // 101
+            
+            while (currUniqueNumber < lastUniqueNumber)
             {
+                _currIndex = length - (lastUniqueNumber - currUniqueNumber);
                 var element = (IHTMLElement) _chatRoot.children.Item(_currIndex);
                 var linearize = Regex.Replace(element.innerHTML, @"\r\n?|\n", "");
                 if (!string.IsNullOrEmpty(linearize))
                 {
                     var doc = new HtmlDocument();
                     doc.LoadHtml(linearize);
-                    //try
-                    //{
-                        Parse(doc);
-                    //}
-                    //catch(Exception ex)
-                    //{
-                    //    Console.WriteLine(ex.ToString());
-                    //    Console.WriteLine("Error : " + element.innerHTML);
-                    //    Console.WriteLine("Error : " + linearize);
-                    //}
+                    Parse(doc);
                 }
-                _currIndex++;
+                currUniqueNumber++;
             }
             return true;
         }
 
-        protected override void OnUserAdded(UserData newUserData)
+        protected override void OnUserAdded(UserEntity newUserEntity)
         {
-            base.OnUserAdded(newUserData);
+            base.OnUserAdded(newUserEntity);
         }
 
         protected override void PrepareUpdate()
         {
             base.PrepareUpdate();
-            FindPotPlayer();
+            if (!FindPotPlayer()) return;
             SelectPotPlayer();
             FindChatRoot();
         }
@@ -197,9 +180,9 @@ namespace ChatApp.Chat
                 var intPtr1 = FindExplorerHandleByChatWindow(FindChatWindowHandle());
                 if (intPtr1 == IntPtr.Zero)
                 {
-                    foreach (var childWindow in Win32.GetChildWindows(intPtr))
+                    foreach (var childWindow in Win32.Win32.GetChildWindows(intPtr))
                     {
-                        if (Win32.GetWinClass(childWindow) != "Internet Explorer_Server")
+                        if (Win32.Win32.GetWinClass(childWindow) != "Internet Explorer_Server")
                             continue;
                         document = GetHtmlDocument(childWindow);
                         if (document == null) continue;
@@ -229,26 +212,21 @@ namespace ChatApp.Chat
                     }
                 }
             }
-            
         }
 
         private IHTMLElement FindChatRoot(HTMLDocument tempDocument, int maxAttemptCount)
         {
-            var num = maxAttemptCount;
             foreach (var child in (IEnumerable) tempDocument.body.children)
             {
                 var variable = (IHTMLElement) child;
-                num--;
-                if (num > 0)
+                while (maxAttemptCount > 0)
                 {
-                    if (variable.className != "wrap_chat")
-                        continue;
-                    var num1 = 0;
-                    foreach (var obj in (IEnumerable) variable.children)
-                        num1++;
-
-                    Console.WriteLine("채팅 문서를 찾았습니다.");
-                    return variable;
+                    if (variable.className == "wrap_chat")
+                    {
+                        Console.WriteLine("채팅 문서를 찾았습니다.");
+                        return variable;
+                    }
+                    maxAttemptCount--;
                 }
                 return null;
             }
@@ -261,11 +239,11 @@ namespace ChatApp.Chat
             const int num = 5;
             for (var i = 0; i < num; i++)
             {
-                zero = Win32.FindWindowEx(IntPtr.Zero, zero, null, "채팅/덧글");
+                zero = Win32.Win32.FindWindowEx(IntPtr.Zero, zero, null, "채팅/덧글");
                 if (zero == IntPtr.Zero)
                     break;
                 uint num1;
-                Win32.GetWindowThreadProcessId(zero, out num1);
+                Win32.Win32.GetWindowThreadProcessId(zero, out num1);
                 if (num1 == _windowPotPlayers[_selectedPotPlayerIdx].pid)
                     return zero;
             }
@@ -278,10 +256,10 @@ namespace ChatApp.Chat
             var zero = IntPtr.Zero;
             while (true)
             {
-                zero = Win32.FindWindowEx(intPtr, IntPtr.Zero, "Internet Explorer_Server", null);
+                zero = Win32.Win32.FindWindowEx(intPtr, IntPtr.Zero, "Internet Explorer_Server", null);
                 if (zero == IntPtr.Zero)
                 {
-                    zero = Win32.FindWindowEx(intPtr, IntPtr.Zero, null, "");
+                    zero = Win32.Win32.FindWindowEx(intPtr, IntPtr.Zero, null, "");
                     if (zero == IntPtr.Zero)
                         break;
                     intPtr = zero;
@@ -292,7 +270,7 @@ namespace ChatApp.Chat
                     break;
                 }
             }
-            
+
             return zero;
         }
 
@@ -315,7 +293,7 @@ namespace ChatApp.Chat
             var node = doc.DocumentNode.FirstChild;
             var attrStr = node.GetAttributeValue("class", "");
             var childs = node.GetRecursiveAttributes("class").ToDictionary(x => x.Value.Split()[0], x => x.OwnerNode.SelectSingleNode("text()")?.InnerText);
-            
+
             // 알림
             if (attrStr.Contains("txt_notice"))
                 // 후원
@@ -328,15 +306,14 @@ namespace ChatApp.Chat
                     var iAmount = 0;
                     int.TryParse(amount, out iAmount);
 
-                    var donationData = new DonationData
+                    var donationData = new DonationEntity
                     {
                         Amount = iAmount,
                         Message = message,
-                        UserData = GetUserData(nickname)
+                        UserEntity = GetUserData(nickname)
                     };
 
-
-                    AddChatData(donationData);
+                    Server.SendMessage(donationData);
                     Console.WriteLine(nickname + "\t" + message + "\t" + amount);
                 }
 
@@ -371,15 +348,13 @@ namespace ChatApp.Chat
 
                 if (message == "") return; // 이모티콘등과 같이 메세지 없을경우
 
-                var chatData = new ChatData
+                var chatData = new ChatEntity
                 {
                     Message = message,
-                    UserData = GetUserData(nickname, rank)
+                    UserEntity = GetUserData(nickname, rank)
                 };
 
-                AddChatData(chatData);
-
-                //Console.WriteLine(rank + "\t" + nickname + "\t" + message + "\t");
+                Server.SendMessage(chatData);
             }
         }
     }

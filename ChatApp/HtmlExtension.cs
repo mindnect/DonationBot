@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HtmlAgilityPack;
 
-namespace ChatApp
+namespace Data
 {
     public static class HtmlExtension
     {

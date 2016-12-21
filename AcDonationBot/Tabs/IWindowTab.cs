@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace ChatApp.Tabs
+namespace Data.Tabs
 {
     public interface IWindowTab
     {

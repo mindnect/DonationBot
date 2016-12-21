@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using mshtml;
 
-namespace ChatApp
+namespace ChatApp.Win32
 {
     internal class Win32
     {

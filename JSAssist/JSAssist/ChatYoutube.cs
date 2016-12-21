@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using mshtml;
 
 namespace JSAssist
 {
@@ -151,6 +152,7 @@ namespace JSAssist
 					break;
 				}
 			Label1:
+			    ;
 			}
 			this.lastUniqueNumber = elementUniqueNumber;
 			return true;

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ChatApp.Tabs
+namespace Data.Tabs
 {
     internal class WindowTab_Setting : IWindowTab
     {

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using ChatApp.Tabs;
+using Data.Tabs;
 using UnityEngine;
 using Verse;
 
-namespace ChatApp.MainTabWindow
+namespace Data.MainTabWindow
 {
     public class Donation : RimWorld.MainTabWindow
     {
