@@ -16,6 +16,8 @@ namespace Comm.Service
 
         protected override void OnMessage(MessageEventArgs e)
         {
+            
+            
             Console.WriteLine(e);
             base.OnMessage(e);
         }

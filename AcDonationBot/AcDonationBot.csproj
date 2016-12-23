@@ -11,7 +11,8 @@
     <AssemblyName>zDonationBot</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Unity Full v3.5</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -26,6 +27,7 @@
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -46,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ACDonationBot.cs" />
-    <Compile Include="Event\EventManager.cs" />
+    <Compile Include="Event\MessageManager.cs" />
     <Compile Include="Incident\AcIncidentWorker_RaidEnemy.cs" />
     <Compile Include="MainTabWindow\DonationWindow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -69,6 +71,11 @@
     <ProjectReference Include="..\ChatApp.Data\ChatApp.Comm.csproj">
       <Project>{64d67fba-9086-4e63-8d76-1e011b57edf4}</Project>
       <Name>ChatApp.Comm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RimworldHugsLib\HugsLib.csproj">
+      <Project>{a5d9bd45-533c-4ca0-9298-8950a3da724c}</Project>
+      <Name>HugsLib</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -4,9 +4,9 @@ using System.Runtime.InteropServices;
 using Comm.Packets;
 using mshtml;
 
-namespace ChatApp.Chat
+namespace ChatApp.Hooks
 {
-    internal class ChatBase
+    internal class Hook
     {
         private string _platform;
         protected HTMLDocument document;

@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatApp.TestServer", "ChatA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatApp.Comm", "ChatApp.Data\ChatApp.Comm.csproj", "{64D67FBA-9086-4E63-8D76-1E011B57EDF4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HugsLib", "RimworldHugsLib\HugsLib.csproj", "{A5D9BD45-533C-4CA0-9298-8950A3DA724C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,14 @@ Global
 		{64D67FBA-9086-4E63-8D76-1E011B57EDF4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{64D67FBA-9086-4E63-8D76-1E011B57EDF4}.Release|x86.ActiveCfg = Release|Any CPU
 		{64D67FBA-9086-4E63-8D76-1E011B57EDF4}.Release|x86.Build.0 = Release|Any CPU
+		{A5D9BD45-533C-4CA0-9298-8950A3DA724C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5D9BD45-533C-4CA0-9298-8950A3DA724C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5D9BD45-533C-4CA0-9298-8950A3DA724C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A5D9BD45-533C-4CA0-9298-8950A3DA724C}.Debug|x86.Build.0 = Debug|Any CPU
+		{A5D9BD45-533C-4CA0-9298-8950A3DA724C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5D9BD45-533C-4CA0-9298-8950A3DA724C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5D9BD45-533C-4CA0-9298-8950A3DA724C}.Release|x86.ActiveCfg = Release|Any CPU
+		{A5D9BD45-533C-4CA0-9298-8950A3DA724C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

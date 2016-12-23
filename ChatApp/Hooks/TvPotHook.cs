@@ -3,7 +3,6 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using ChatApp.Chat;
 using ChatApp.Extension;
 using ChatApp.Win32;
 using Comm.Packets;
@@ -11,9 +10,9 @@ using Comm.Server;
 using HtmlAgilityPack;
 using mshtml;
 
-namespace ChatApp.Chats
+namespace ChatApp.Hooks
 {
-    internal class ChatTVPot : ChatBase
+    internal class TvPotReader : Hook
     {
         private IHTMLElement _chatRoot;
         private int _currIndex;
@@ -343,7 +342,7 @@ namespace ChatApp.Chats
 
                 if (message == "") return; // 이모티콘등과 같이 메세지 없을경우
 
-                var chatData = new Comm.Packets.Chat
+                var chatData = new Chat
                 {
                     message = message,
                     user = GetUserData(nickname, rank)

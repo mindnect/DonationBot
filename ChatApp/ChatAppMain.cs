@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using ChatApp.Chats;
+using ChatApp.Hooks;
 using Comm.Server;
 
 namespace ChatApp
@@ -9,7 +9,7 @@ namespace ChatApp
     {
         private static void Main()
         {
-            var chatTVPot = new ChatTVPot();
+            var chatTVPot = new TvPotReader();
             chatTVPot.Init();
 
             SocketServer.StartServer();

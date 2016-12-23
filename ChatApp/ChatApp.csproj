@@ -67,8 +67,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Chats\ChatBase.cs" />
-    <Compile Include="Chats\ChatTVPot.cs" />
+    <Compile Include="Hooks\Hook.cs" />
+    <Compile Include="Hooks\TvPotHook.cs" />
     <Compile Include="Extension\HtmlExtension.cs" />
     <Compile Include="ChatAppMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -80,7 +80,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Chats\_Document\메세지양식.html" />
+    <Content Include="Hooks\_Document\메세지양식.html" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
