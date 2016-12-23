@@ -1,3 +1,6 @@
 [submodule "LiteDB"]
 	path = LiteDB
 	url = https://github.com/AlcoholV/LiteDB.git
+[submodule "RimworldHugsLib"]
+	path = RimworldHugsLib
+	url = https://github.com/UnlimitedHugs/RimworldHugsLib
