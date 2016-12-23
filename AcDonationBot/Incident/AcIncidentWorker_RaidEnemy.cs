@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using RimWorld;
 using Verse;
 
-namespace Data.Incident
+namespace AlcoholV.Incident
 {
     public class AcIncidentWorker_RaidEnemy : IncidentWorker_RaidEnemy
     {

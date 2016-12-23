@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
-using ChatApp.AppServer;
-using ChatApp.Chat;
+using ChatApp.Chats;
+using Comm.Server;
 
 namespace ChatApp
 {
@@ -11,7 +11,8 @@ namespace ChatApp
         {
             var chatTVPot = new ChatTVPot();
             chatTVPot.Init();
-            Server.StartServer();
+
+            SocketServer.StartServer();
             do
             {
                 while (!Console.KeyAvailable)
@@ -20,7 +21,7 @@ namespace ChatApp
                     chatTVPot.Update();
                 }
             } while (Console.ReadKey(true).Key != ConsoleKey.Escape);
-            Server.StopServer();
+            SocketServer.StopServer();
         }
     }
 }
