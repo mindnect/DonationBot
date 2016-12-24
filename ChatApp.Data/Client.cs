@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Diagnostics.Eventing.Reader;
 using System.Threading;
 using Comm.Extensions;
 using Comm.Packets;
 using WebSocketSharp;
 
-namespace Comm.Client
+namespace Comm
 {
-    public static class SocketClient
+    public static class Client
     {
         private const string Address = "ws://localhost:14416/Broad";
 
@@ -17,7 +18,7 @@ namespace Comm.Client
 
         private static bool _isRetry;
 
-        static SocketClient()
+        static Client()
         {
             WebSocket = new WebSocket(Address);
             WebSocket.OnOpen += OnOpenHandler;
@@ -30,10 +31,10 @@ namespace Comm.Client
         public static bool IsConsole { get; set; }
         private static WebSocket WebSocket { get; }
 
-        public static event Action<string> OnOpen , OnClose , OnError , OnRetry;
-        public static event Action<Packet> OnMessage;
+        public static event Action<string> OnLogging;
+        public static event Action<Packet> OnPacket;
 
-        public static void Connect()
+        public static void Start()
         {
             try
             {
@@ -45,7 +46,7 @@ namespace Comm.Client
             }
         }
 
-        public static void Close()
+        public static void Stop()
         {
             try
             {
@@ -62,9 +63,9 @@ namespace Comm.Client
             _isRetry = true;
             while (!WebSocket.IsAlive)
             {
-                OnRetry?.Invoke(MsgEventRetry);
+                OnLogging?.Invoke(MsgEventRetry);
                 Console.WriteLine(MsgEventRetry);
-                Connect();
+                Start();
                 Thread.Sleep(100);
             }
             _isRetry = false;
@@ -74,13 +75,13 @@ namespace Comm.Client
         {
             var xmlData = e.Data;
             var packet = Xml.Deserialize<Packet>(xmlData);
-            OnMessage?.Invoke(packet);
+            OnPacket?.Invoke(packet);
         }
 
         private static void OnErrorHandler(object sender, ErrorEventArgs e)
         {
             if (IsConsole) Console.WriteLine(MsgEventError + e.Message);
-            OnError?.Invoke(MsgEventError + e.Message);
+            OnLogging?.Invoke(MsgEventError + e.Message);
         }
 
         private static void OnCloseHandler(object sender, CloseEventArgs e)
@@ -89,13 +90,13 @@ namespace Comm.Client
             new Thread(Retry).Start();
 
             if (IsConsole) Console.WriteLine(MsgEventClose + e.Reason);
-            OnClose?.Invoke(MsgEventOpen + e.Reason);
+            OnLogging?.Invoke(MsgEventOpen + e.Reason);
         }
 
         private static void OnOpenHandler(object sender, EventArgs e)
         {
             if (IsConsole) Console.WriteLine(MsgEventOpen);
-            OnOpen?.Invoke(MsgEventOpen);
+            OnLogging?.Invoke(MsgEventOpen);
         }
     }
 }

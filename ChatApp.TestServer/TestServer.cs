@@ -1,6 +1,6 @@
 ﻿using System;
+using Comm;
 using Comm.Packets;
-using Comm.Server;
 
 namespace TestServer
 {
@@ -8,7 +8,7 @@ namespace TestServer
     {
         public static void Main(string[] args)
         {
-            SocketServer.StartServer();
+            Server.StartServer();
             while (true)
             {
                 var str = Console.ReadLine();
@@ -22,9 +22,9 @@ namespace TestServer
                         platform = "다음"
                     }
                 };
-                SocketServer.SendMessage(packet);
+                Server.SendMessage(packet);
             }
-            //SocketServer.StopServer();
+            //Server.StopServer();
         }
     }
 }

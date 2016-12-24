@@ -1,32 +1,32 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Comm.Extensions;
 using Comm.Packets;
-using Comm.Service;
 using WebSocketSharp.Server;
 
-namespace Comm.Server
+namespace Comm
 {
-    public static class SocketServer
+    public class Server
     {
         private const int Port = 14416;
-        private static readonly List<BroadService> BroadServices;
+        private static readonly List<BroadService> _broadServices;
         private static WebSocketServer _wssv;
 
-        static SocketServer()
+        static Server()
         {
-            BroadServices = new List<BroadService>();
+            _broadServices = new List<BroadService>();
         }
 
         public static void RegisterService(BroadService server)
         {
-            BroadServices.Add(server);
+            _broadServices.Add(server);
         }
 
         public static void SendMessage(Packet packet)
         {
             Console.WriteLine(packet.ToString());
-            foreach (var echoService in BroadServices)
+            foreach (var echoService in _broadServices)
                 echoService.SendMessage(packet.Serialize());
         }
 
@@ -51,7 +51,7 @@ namespace Comm.Server
 
         public static void UnregisterService(BroadService server)
         {
-            BroadServices.Remove(server);
+            _broadServices.Remove(server);
         }
     }
 }

@@ -59,6 +59,7 @@
     <Compile Include="Event\EventComponent.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Document\TextFile1.txt" />
     <Content Include="Mod\About\About.xml" />
     <Content Include="Mod\MainTabDefs\WorkTab.xml" />
   </ItemGroup>

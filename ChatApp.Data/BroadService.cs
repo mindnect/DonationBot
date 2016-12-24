@@ -1,9 +1,8 @@
 using System;
-using Comm.Server;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
-namespace Comm.Service
+namespace Comm
 {
     public class BroadService : WebSocketBehavior
     {
@@ -25,14 +24,14 @@ namespace Comm.Service
         protected override void OnOpen()
         {
             Console.WriteLine("[Broad] 클라이언트 접속");
-            SocketServer.RegisterService(this);
+            Server.RegisterService(this);
             base.OnOpen();
         }
 
         protected override void OnClose(CloseEventArgs e)
         {
             Console.WriteLine("[Broad] 클라이언트 연결종료");
-            SocketServer.UnregisterService(this);
+            Server.UnregisterService(this);
             base.OnClose(e);
         }
     }

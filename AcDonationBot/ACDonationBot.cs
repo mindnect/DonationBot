@@ -1,28 +1,41 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using AlcoholV.Event;
-using Comm.Client;
+using Comm;
+using Comm.Packets;
 using HugsLib;
-using HugsLib.Settings;
-using HugsLib.Utils;
-using UnityEngine;
+using RimWorld;
 using UnityEngine.SceneManagement;
 using Verse;
 
 namespace AlcoholV
 {
+    public enum EventExcuteType
+    {
+        Instant,
+        Stack,
+        Cool
+    }
+
     public class AcDonationBot : ModBase
     {
+    
+
         public AcDonationBot()
         {
-            SocketClient.OnMessage += MessageManager.OnMessage;
-            SocketClient.OnClose += OnClientLog;
-            SocketClient.OnError += OnClientLog;
-            SocketClient.OnOpen += OnClientLog;
-            SocketClient.OnRetry += OnClientLog;
-            SocketClient.Connect();
+            Instance = this;
+            MessageManager.Init();
+            Client.Start();
         }
+
+        // Use Singleton
+        public static AcDonationBot Instance { get; private set; }
+
+        private static void OnMessage(Packet obj)
+        {
+        }
+
+        #region override
 
         public override string ModIdentifier => "AcDonationBot";
 
@@ -30,7 +43,6 @@ namespace AlcoholV
         {
             //Log.Message(MethodBase.GetCurrentMethod().Name);
         }
-
 
 
         public override void SceneLoaded(Scene scene)
@@ -43,63 +55,31 @@ namespace AlcoholV
             Logger.Message("SettingsChanged");
         }
 
-        private enum HandleEnum
-        {
-            DefaultValue,
-            ValueOne,
-            ValueTwo
-        }
-
         public override void DefsLoaded()
         {
-            Logger.Message("DefsLoaded");
-            //var str = Settings.GetHandle("str", "String value", "", "value");
-            //var spinner = Settings.GetHandle("intSpinner", "Spinner", "desc", 5, Validators.IntRangeValidator(0, 30));
-            //spinner.SpinnerIncrement = 2;
-            //var enumHandle = Settings.GetHandle("enumThing", "Enum setting", "", HandleEnum.DefaultValue, null, "test_enumSetting_");
-            //var toggle = Settings.GetHandle("toggle", "Toggle setting", "Toggle setting", false);
-
-
-            var custom = Settings.GetHandle<CustomHandleType>("customType", null, null);
-            if (custom.Value == null) custom.Value = new CustomHandleType { nums = new List<int>() };
-            if (custom.Value.nums.Count < 10) custom.Value.nums.Add(Rand.Range(1, 100));
-            HugsLibController.SettingsManager.SaveChanges();
-            Logger.Trace("Custom setting values: " + custom.Value.nums.Join(","));
-
-            TestCustomTypeSetting();
-           
-        }
-
-        private void TestCustomTypeSetting()
-        {
-
-
-        }
-
-        private class CustomHandleType : SettingHandleConvertible
-        {
-            public List<int> nums = new List<int>();
-
-            public override void FromString(string settingValue)
+            var incidentList = new List<IncidentDef>();
+            foreach (var current in DefDatabase<IncidentDef>.AllDefs.Select(x => x).OrderBy(d => d.defName))
             {
-                nums = settingValue.Length > 0 ? settingValue.Split('|').Select(int.Parse).ToList() : new List<int>();
-            }
-
-            public override string ToString()
-            {
-                return nums != null ? nums.Join("|") : "";
+                var handle = Settings.GetHandle(current.defName, current.label, "", EventExcuteType.Instant, null, "");
+                handle.Unsaved = true;
+                handle.CustomDrawer = rect =>
+                {
+                    if (Widgets.ButtonText(rect, "HugsLib_setting_allNews_button".Translate()))
+                        return true;
+                    return false;
+                };
             }
         }
-
-
 
         //public override void Tick(int currentTick)
         //{
         //}
 
-        //public override void Update()
-        //{
-        //}
+        public override void Update()
+        {
+            //if (Current.ProgramState == ProgramState.Playing)
+                MessageManager.Update();
+        }
 
         //public override void FixedUpdate()
         //{
@@ -139,9 +119,6 @@ namespace AlcoholV
 
         //}
 
-        private static void OnClientLog(string s)
-        {
-            Log.Message(s);
-        }
+        #endregion
     }
 }

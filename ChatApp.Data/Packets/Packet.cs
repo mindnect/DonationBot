@@ -10,6 +10,7 @@ namespace Comm.Packets
         Chat,
         Whisper,
         Donation,
+        Order
     }
     [Serializable]
     public class User
@@ -20,13 +21,14 @@ namespace Comm.Packets
 
         public override string ToString()
         {
-            return $"{platform,-8} {rank,4} {nickname,-12}";
+            return $"{platform, 8} {rank,4} {nickname, 12}";
         }
     }
     [Serializable]
     [XmlInclude(typeof(Notice))]
     [XmlInclude(typeof(Chat))]
     [XmlInclude(typeof(Donation))]
+    [XmlInclude(typeof(Order))]
     public class Packet
     {
         public MessageType messageType;
@@ -55,9 +57,29 @@ namespace Comm.Packets
 
         public override string ToString()
         {
-            return $"{user,-24} {message,-24}";
+            return $"{user, 24} {message, 24}";
         }
     }
+
+    //@200 ¸Þ¼¼Áö
+    public class Order : Packet
+    {
+        public User user;
+        public string command;
+        public string parameter;
+
+        public Order()
+        {
+            messageType = MessageType.Order;
+        }
+
+        public override string ToString()
+        {
+            return $"{user, 24} {command, 8} {message, 24}";
+        }
+
+    }
+
     [Serializable]
     public class Donation : Chat
     {
@@ -70,7 +92,7 @@ namespace Comm.Packets
 
         public override string ToString()
         {
-            return base.ToString() + $"{amount,-8}";
+            return base.ToString() + $"{amount, 8}";
         }
     }
 }

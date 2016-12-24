@@ -1,6 +1,6 @@
 using System;
 
-namespace ChatApp.Win32
+namespace ChatApp.Win
 {
     internal class WindowInfo
     {

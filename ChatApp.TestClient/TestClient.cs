@@ -1,5 +1,5 @@
 ﻿using System;
-using Comm.Client;
+using Comm;
 using Comm.Extensions;
 using Comm.Packets;
 
@@ -9,14 +9,14 @@ namespace TestClient
     {
         public static void Main(string[] args)
         {
-            SocketClient.OnMessage += OnMessage;
-            SocketClient.Connect();
+            Client.OnPacket += OnPacket;
+            Client.Start();
 
             Console.ReadKey();
-            SocketClient.Close();
+            Client.Stop();
         }
 
-        private static void OnMessage(Packet obj)
+        private static void OnPacket(Packet obj)
         {
             Console.WriteLine(obj.message);
         }

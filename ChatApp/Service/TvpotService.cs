@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using ChatApp.Extension;
-using ChatApp.Win32;
+using ChatApp.Win;
+using Comm;
 using Comm.Packets;
-using Comm.Server;
 using HtmlAgilityPack;
 using mshtml;
 
-namespace ChatApp.Hooks
+namespace ChatApp.Service
 {
-    internal class TvPotReader : Hook
+    internal class TvpotService : BaseService
     {
         private IHTMLElement _chatRoot;
         private int _currIndex;
@@ -44,15 +44,15 @@ namespace ChatApp.Hooks
         {
             HTMLDocument htmlDocument = null;
             int num1;
-            num1 = Win32.Win32.RegisterWindowMessage("WM_HTML_GETOBJECT");
+            num1 = Win.Win32.RegisterWindowMessage("WM_HTML_GETOBJECT");
             if (num1 != 0)
             {
                 //Console.WriteLine("Get Explorer Document");
                 int num;
-                Win32.Win32.SendMessageTimeout(hWndExplorer, num1, 0, 0, 2, 1000, out num);
+                Win.Win32.SendMessageTimeout(hWndExplorer, num1, 0, 0, 2, 1000, out num);
                 if (num != 0)
                 {
-                    Win32.Win32.ObjectFromLresult(num, ref Win32.Win32.IID_IHTMLDocument, 0, ref htmlDocument);
+                    Win.Win32.ObjectFromLresult(num, ref Win.Win32.IID_IHTMLDocument, 0, ref htmlDocument);
                     if (htmlDocument == null) Console.WriteLine("채팅 오브젝트를 찾을 수 없습니다.");
                     // MessageBox.Show("Couldn't Found Document", "Warning");
                 }
@@ -75,7 +75,7 @@ namespace ChatApp.Hooks
             var zero = IntPtr.Zero;
             for (var i = 0; i < num; i++)
             {
-                zero = Win32.Win32.FindWindowEx(IntPtr.Zero, zero, "PotPlayer", null);
+                zero = Win.Win32.FindWindowEx(IntPtr.Zero, zero, "PotPlayer", null);
                 if (zero == IntPtr.Zero)
                     break;
                 intPtrArray[i] = zero;
@@ -83,7 +83,7 @@ namespace ChatApp.Hooks
             }
             for (var j = num1; j < num; j++)
             {
-                zero = Win32.Win32.FindWindowEx(IntPtr.Zero, zero, "PotPlayer64", null);
+                zero = Win.Win32.FindWindowEx(IntPtr.Zero, zero, "PotPlayer64", null);
                 if (zero == IntPtr.Zero)
                     break;
                 intPtrArray[j] = zero;
@@ -93,9 +93,9 @@ namespace ChatApp.Hooks
             var stringBuilder = new StringBuilder(260);
             for (var k = 0; k < num1; k++)
             {
-                Win32.Win32.GetWindowText(intPtrArray[k], stringBuilder, 260);
+                Win.Win32.GetWindowText(intPtrArray[k], stringBuilder, 260);
                 uint num2;
-                Win32.Win32.GetWindowThreadProcessId(intPtrArray[k], out num2);
+                Win.Win32.GetWindowThreadProcessId(intPtrArray[k], out num2);
                 _windowPotPlayers[k] = new WindowInfo
                 {
                     hWnd = intPtrArray[k],
@@ -177,9 +177,9 @@ namespace ChatApp.Hooks
                 var intPtr1 = FindExplorerHandleByChatWindow(FindChatWindowHandle());
                 if (intPtr1 == IntPtr.Zero)
                 {
-                    foreach (var childWindow in Win32.Win32.GetChildWindows(intPtr))
+                    foreach (var childWindow in Win.Win32.GetChildWindows(intPtr))
                     {
-                        if (Win32.Win32.GetWinClass(childWindow) != "Internet Explorer_Server")
+                        if (Win.Win32.GetWinClass(childWindow) != "Internet Explorer_Server")
                             continue;
                         document = GetHtmlDocument(childWindow);
                         if (document == null) continue;
@@ -236,11 +236,11 @@ namespace ChatApp.Hooks
             const int num = 5;
             for (var i = 0; i < num; i++)
             {
-                zero = Win32.Win32.FindWindowEx(IntPtr.Zero, zero, null, "채팅/덧글");
+                zero = Win.Win32.FindWindowEx(IntPtr.Zero, zero, null, "채팅/덧글");
                 if (zero == IntPtr.Zero)
                     break;
                 uint num1;
-                Win32.Win32.GetWindowThreadProcessId(zero, out num1);
+                Win.Win32.GetWindowThreadProcessId(zero, out num1);
                 if (num1 == _windowPotPlayers[_selectedPotPlayerIdx].pid)
                     return zero;
             }
@@ -253,10 +253,10 @@ namespace ChatApp.Hooks
             var zero = IntPtr.Zero;
             while (true)
             {
-                zero = Win32.Win32.FindWindowEx(intPtr, IntPtr.Zero, "Internet Explorer_Server", null);
+                zero = Win.Win32.FindWindowEx(intPtr, IntPtr.Zero, "Internet Explorer_Server", null);
                 if (zero == IntPtr.Zero)
                 {
-                    zero = Win32.Win32.FindWindowEx(intPtr, IntPtr.Zero, null, "");
+                    zero = Win.Win32.FindWindowEx(intPtr, IntPtr.Zero, null, "");
                     if (zero == IntPtr.Zero)
                         break;
                     intPtr = zero;
@@ -307,7 +307,7 @@ namespace ChatApp.Hooks
                         user = GetUserData(nickname)
                     };
 
-                    SocketServer.SendMessage(donationData);
+                    Server.SendMessage(donationData);
                     Console.WriteLine(nickname + "\t" + message + "\t" + amount);
                 }
 
@@ -342,13 +342,32 @@ namespace ChatApp.Hooks
 
                 if (message == "") return; // 이모티콘등과 같이 메세지 없을경우
 
-                var chatData = new Chat
-                {
-                    message = message,
-                    user = GetUserData(nickname, rank)
-                };
 
-                SocketServer.SendMessage(chatData);
+                Packet packet = null;
+                var firstChar = message[0];
+                // 명령
+                if ((firstChar == '@') || (firstChar == '!'))
+                {
+                    //@200 테스트 메세지
+                    var commands = message.Split(new[] {' '}, 2);
+                    var command = commands[0];
+                    message = commands.Length != 1 ? commands[1] : "";
+                    packet = new Order
+                    {
+                        user = GetUserData(nickname, rank),
+                        command = command,
+                        message = message
+                    };
+                }
+                else
+                {
+                    packet = new Chat
+                    {
+                        message = message,
+                        user = GetUserData(nickname, rank)
+                    };
+                }
+                Server.SendMessage(packet);
             }
         }
     }
