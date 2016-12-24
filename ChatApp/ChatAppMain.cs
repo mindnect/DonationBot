@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
-using ChatApp.Service;
-using Comm;
+using ChatApp.Parser;
+using ChatAppLib;
 
 namespace ChatApp
 {
@@ -9,7 +9,7 @@ namespace ChatApp
     {
         private static void Main()
         {
-            var chatTVPot = new TvpotService();
+            var chatTVPot = new TvpotParser();
             chatTVPot.Init();
 
             Server.StartServer();

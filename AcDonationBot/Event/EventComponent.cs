@@ -84,9 +84,9 @@ namespace AlcoholV.Event
 
         private void OnMessage(object sender, string str)
         {
-            // Log.Message(messageType +"," + message);
+            // Log.MessagePacket(packetType +"," + message);
 
-            //Log.Message(str);
+            //Log.MessagePacket(str);
 
             //var name = data["name"];
             //var message = text[4];

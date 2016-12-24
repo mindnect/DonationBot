@@ -2,7 +2,7 @@
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace Comm.Extensions
+namespace ChatAppLib.Extensions
 {
     public static class Xml
     {

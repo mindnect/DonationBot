@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Diagnostics.Eventing.Reader;
 using System.Threading;
-using Comm.Extensions;
-using Comm.Packets;
+using ChatAppLib.Data;
+using ChatAppLib.Extensions;
 using WebSocketSharp;
 
-namespace Comm
+namespace ChatAppLib
 {
     public static class Client
     {

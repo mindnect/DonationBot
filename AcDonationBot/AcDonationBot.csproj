@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ACDonationBot.cs" />
-    <Compile Include="Event\MessageManager.cs" />
+    <Compile Include="MessageManager.cs" />
     <Compile Include="Incident\AcIncidentWorker_RaidEnemy.cs" />
     <Compile Include="MainTabWindow\DonationWindow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -69,9 +69,9 @@
       <Name>Assembly-CSharp</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\ChatApp.Data\ChatApp.Comm.csproj">
+    <ProjectReference Include="..\ChatApp.Data\ChatApp.Lib.csproj">
       <Project>{64d67fba-9086-4e63-8d76-1e011b57edf4}</Project>
-      <Name>ChatApp.Comm</Name>
+      <Name>ChatApp.Lib</Name>
     </ProjectReference>
     <ProjectReference Include="..\RimworldHugsLib\HugsLib.csproj">
       <Project>{a5d9bd45-533c-4ca0-9298-8950a3da724c}</Project>

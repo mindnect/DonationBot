@@ -1,4 +1,4 @@
-﻿namespace Comm.Extensions
+﻿namespace ChatAppLib.Extensions
 {
     //public class MyTypeResolver : JavaScriptTypeResolver
     //{

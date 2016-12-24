@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Comm.Packets;
+using ChatAppLib.Data;
 using mshtml;
 
-namespace ChatApp.Service
+namespace ChatApp.Parser
 {
-    internal class BaseService
+    internal class BaseParser
     {
         private string _platform;
         protected HTMLDocument document;
@@ -71,7 +71,7 @@ namespace ChatApp.Service
 
         protected virtual void OnUserAdded(User newUser)
         {
-            Console.WriteLine($"{"New",-8} {newUser}");
+            Console.WriteLine("New User");
         }
 
         protected virtual void PrepareUpdate()

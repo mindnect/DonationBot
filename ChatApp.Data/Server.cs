@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Comm.Extensions;
-using Comm.Packets;
+using ChatAppLib.Data;
+using ChatAppLib.Extensions;
 using WebSocketSharp.Server;
 
-namespace Comm
+namespace ChatAppLib
 {
     public class Server
     {

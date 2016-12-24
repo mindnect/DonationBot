@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AlcoholV.Event;
-using Comm;
-using Comm.Packets;
+using ChatAppLib.Data;
+using ChatAppLib;
 using HugsLib;
 using RimWorld;
 using UnityEngine.SceneManagement;
@@ -41,7 +41,7 @@ namespace AlcoholV
 
         public override void Initialize()
         {
-            //Log.Message(MethodBase.GetCurrentMethod().Name);
+            //Log.MessagePacket(MethodBase.GetCurrentMethod().Name);
         }
 
 

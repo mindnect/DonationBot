@@ -7,8 +7,8 @@
     <ProjectGuid>{64D67FBA-9086-4E63-8D76-1E011B57EDF4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Comm</RootNamespace>
-    <AssemblyName>ChatAppComm</AssemblyName>
+    <RootNamespace>ChatAppLib</RootNamespace>
+    <AssemblyName>ChatAppLib</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
@@ -52,7 +52,7 @@
     <Compile Include="Extensions\Json.cs" />
     <Compile Include="BroadService.cs" />
     <Compile Include="Server.cs" />
-    <Compile Include="Packets\Packet.cs" />
+    <Compile Include="Data\Packet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

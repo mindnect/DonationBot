@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatApp.TestClient", "ChatA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatApp.TestServer", "ChatApp.TestServer\ChatApp.TestServer.csproj", "{37713568-967E-4B49-938D-58907BD53576}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatApp.Comm", "ChatApp.Data\ChatApp.Comm.csproj", "{64D67FBA-9086-4E63-8D76-1E011B57EDF4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatApp.Lib", "ChatApp.Data\ChatApp.Lib.csproj", "{64D67FBA-9086-4E63-8D76-1E011B57EDF4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HugsLib", "RimworldHugsLib\HugsLib.csproj", "{A5D9BD45-533C-4CA0-9298-8950A3DA724C}"
 EndProject

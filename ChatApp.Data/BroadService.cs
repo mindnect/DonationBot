@@ -2,7 +2,7 @@ using System;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
-namespace Comm
+namespace ChatAppLib
 {
     public class BroadService : WebSocketBehavior
     {
@@ -15,22 +15,20 @@ namespace Comm
 
         protected override void OnMessage(MessageEventArgs e)
         {
-            
-            
             Console.WriteLine(e);
             base.OnMessage(e);
         }
 
         protected override void OnOpen()
         {
-            Console.WriteLine("[Broad] 클라이언트 접속");
+            Console.WriteLine("클라이언트 접속");
             Server.RegisterService(this);
             base.OnOpen();
         }
 
         protected override void OnClose(CloseEventArgs e)
         {
-            Console.WriteLine("[Broad] 클라이언트 연결종료");
+            Console.WriteLine("클라이언트 연결종료");
             Server.UnregisterService(this);
             base.OnClose(e);
         }

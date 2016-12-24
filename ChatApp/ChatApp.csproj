@@ -67,8 +67,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Service\BaseService.cs" />
-    <Compile Include="Service\TvpotService.cs" />
+    <Compile Include="Parser\BaseParser.cs" />
+    <Compile Include="Parser\TvpotParser.cs" />
     <Compile Include="Extension\HtmlExtension.cs" />
     <Compile Include="ChatAppMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -80,7 +80,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Service\_Document\메세지양식.html" />
+    <Content Include="Parser\_Document\메세지양식.html" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -95,9 +95,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ChatApp.Data\ChatApp.Comm.csproj">
+    <ProjectReference Include="..\ChatApp.Data\ChatApp.Lib.csproj">
       <Project>{64d67fba-9086-4e63-8d76-1e011b57edf4}</Project>
-      <Name>ChatApp.Comm</Name>
+      <Name>ChatApp.Lib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

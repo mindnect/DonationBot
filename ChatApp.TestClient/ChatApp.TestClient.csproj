@@ -70,9 +70,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ChatApp.Data\ChatApp.Comm.csproj">
+    <ProjectReference Include="..\ChatApp.Data\ChatApp.Lib.csproj">
       <Project>{64D67FBA-9086-4E63-8D76-1E011B57EDF4}</Project>
-      <Name>ChatApp.Comm</Name>
+      <Name>ChatApp.Lib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

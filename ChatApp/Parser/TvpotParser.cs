@@ -5,14 +5,14 @@ using System.Text;
 using System.Text.RegularExpressions;
 using ChatApp.Extension;
 using ChatApp.Win;
-using Comm;
-using Comm.Packets;
+using ChatAppLib.Data;
+using ChatAppLib;
 using HtmlAgilityPack;
 using mshtml;
 
-namespace ChatApp.Service
+namespace ChatApp.Parser
 {
-    internal class TvpotService : BaseService
+    internal class TvpotParser : BaseParser
     {
         private IHTMLElement _chatRoot;
         private int _currIndex;
@@ -44,15 +44,15 @@ namespace ChatApp.Service
         {
             HTMLDocument htmlDocument = null;
             int num1;
-            num1 = Win.Win32.RegisterWindowMessage("WM_HTML_GETOBJECT");
+            num1 = Win32.RegisterWindowMessage("WM_HTML_GETOBJECT");
             if (num1 != 0)
             {
                 //Console.WriteLine("Get Explorer Document");
                 int num;
-                Win.Win32.SendMessageTimeout(hWndExplorer, num1, 0, 0, 2, 1000, out num);
+                Win32.SendMessageTimeout(hWndExplorer, num1, 0, 0, 2, 1000, out num);
                 if (num != 0)
                 {
-                    Win.Win32.ObjectFromLresult(num, ref Win.Win32.IID_IHTMLDocument, 0, ref htmlDocument);
+                    Win32.ObjectFromLresult(num, ref Win32.IID_IHTMLDocument, 0, ref htmlDocument);
                     if (htmlDocument == null) Console.WriteLine("채팅 오브젝트를 찾을 수 없습니다.");
                     // MessageBox.Show("Couldn't Found Document", "Warning");
                 }
@@ -75,7 +75,7 @@ namespace ChatApp.Service
             var zero = IntPtr.Zero;
             for (var i = 0; i < num; i++)
             {
-                zero = Win.Win32.FindWindowEx(IntPtr.Zero, zero, "PotPlayer", null);
+                zero = Win32.FindWindowEx(IntPtr.Zero, zero, "PotPlayer", null);
                 if (zero == IntPtr.Zero)
                     break;
                 intPtrArray[i] = zero;
@@ -83,7 +83,7 @@ namespace ChatApp.Service
             }
             for (var j = num1; j < num; j++)
             {
-                zero = Win.Win32.FindWindowEx(IntPtr.Zero, zero, "PotPlayer64", null);
+                zero = Win32.FindWindowEx(IntPtr.Zero, zero, "PotPlayer64", null);
                 if (zero == IntPtr.Zero)
                     break;
                 intPtrArray[j] = zero;
@@ -93,9 +93,9 @@ namespace ChatApp.Service
             var stringBuilder = new StringBuilder(260);
             for (var k = 0; k < num1; k++)
             {
-                Win.Win32.GetWindowText(intPtrArray[k], stringBuilder, 260);
+                Win32.GetWindowText(intPtrArray[k], stringBuilder, 260);
                 uint num2;
-                Win.Win32.GetWindowThreadProcessId(intPtrArray[k], out num2);
+                Win32.GetWindowThreadProcessId(intPtrArray[k], out num2);
                 _windowPotPlayers[k] = new WindowInfo
                 {
                     hWnd = intPtrArray[k],
@@ -177,9 +177,9 @@ namespace ChatApp.Service
                 var intPtr1 = FindExplorerHandleByChatWindow(FindChatWindowHandle());
                 if (intPtr1 == IntPtr.Zero)
                 {
-                    foreach (var childWindow in Win.Win32.GetChildWindows(intPtr))
+                    foreach (var childWindow in Win32.GetChildWindows(intPtr))
                     {
-                        if (Win.Win32.GetWinClass(childWindow) != "Internet Explorer_Server")
+                        if (Win32.GetWinClass(childWindow) != "Internet Explorer_Server")
                             continue;
                         document = GetHtmlDocument(childWindow);
                         if (document == null) continue;
@@ -236,11 +236,11 @@ namespace ChatApp.Service
             const int num = 5;
             for (var i = 0; i < num; i++)
             {
-                zero = Win.Win32.FindWindowEx(IntPtr.Zero, zero, null, "채팅/덧글");
+                zero = Win32.FindWindowEx(IntPtr.Zero, zero, null, "채팅/덧글");
                 if (zero == IntPtr.Zero)
                     break;
                 uint num1;
-                Win.Win32.GetWindowThreadProcessId(zero, out num1);
+                Win32.GetWindowThreadProcessId(zero, out num1);
                 if (num1 == _windowPotPlayers[_selectedPotPlayerIdx].pid)
                     return zero;
             }
@@ -253,10 +253,10 @@ namespace ChatApp.Service
             var zero = IntPtr.Zero;
             while (true)
             {
-                zero = Win.Win32.FindWindowEx(intPtr, IntPtr.Zero, "Internet Explorer_Server", null);
+                zero = Win32.FindWindowEx(intPtr, IntPtr.Zero, "Internet Explorer_Server", null);
                 if (zero == IntPtr.Zero)
                 {
-                    zero = Win.Win32.FindWindowEx(intPtr, IntPtr.Zero, null, "");
+                    zero = Win32.FindWindowEx(intPtr, IntPtr.Zero, null, "");
                     if (zero == IntPtr.Zero)
                         break;
                     intPtr = zero;
@@ -300,15 +300,8 @@ namespace ChatApp.Service
                     var amount = childs.GetValueOrDefault("txt_money", "0").Replace(",", "");
                     var message = childs.GetValueOrDefault("txt_message", "").Trim();
 
-                    var donationData = new Donation
-                    {
-                        amount = amount,
-                        message = message,
-                        user = GetUserData(nickname)
-                    };
-
+                    var donationData = new DonationPacket(PacketType.Donation,GetUserData(nickname),message,amount);
                     Server.SendMessage(donationData);
-                    Console.WriteLine(nickname + "\t" + message + "\t" + amount);
                 }
 
                 // todo : 입장, 퇴장, 임명, 해임, 닉변경, 도배경고 파싱
@@ -321,6 +314,8 @@ namespace ChatApp.Service
             // 메세지
             else if (attrStr.Contains("area_chat"))
             {
+                Packet packet = null;
+                var packetType = PacketType.None;
                 var nickname = "";
                 var rank = "";
                 var message = "";
@@ -328,46 +323,35 @@ namespace ChatApp.Service
                 // 채팅
                 if (childs.ContainsKey("tit_name"))
                 {
+                    packetType = PacketType.Chat;
                     nickname = childs.GetValueOrDefault("tit_name", "").Split('(')[0].Trim();
                     rank = childs.GetValueOrDefault("ico_label", "");
                     message = childs.GetValueOrDefault("info_words", "").Trim();
                 }
 
-                // 쪽지
-                else if (childs.ContainsKey("tit_whisper"))
-                {
-                    //nickname = childs.GetValueOrDefault("tit_whisper", "").Split('(')[0].Trim();
-                    //message = childs.GetValueOrDefault("info_whisper", "").Trim();
-                }
+                //// 쪽지
+                //else if (childs.ContainsKey("tit_whisper"))
+                //{
+                //    //nickname = childs.GetValueOrDefault("tit_whisper", "").Split('(')[0].Trim();
+                //    //message = childs.GetValueOrDefault("info_whisper", "").Trim();
+                //}
 
                 if (message == "") return; // 이모티콘등과 같이 메세지 없을경우
 
-
-                Packet packet = null;
-                var firstChar = message[0];
-                // 명령
-                if ((firstChar == '@') || (firstChar == '!'))
+                if (message.StartsWith("@"))
                 {
-                    //@200 테스트 메세지
+                    packetType = PacketType.Command;
                     var commands = message.Split(new[] {' '}, 2);
-                    var command = commands[0];
-                    message = commands.Length != 1 ? commands[1] : "";
-                    packet = new Order
-                    {
-                        user = GetUserData(nickname, rank),
-                        command = command,
-                        message = message
-                    };
+                    message = commands.ElementAtOrDefault(1) != null ? commands[1] : "";
+                    var command = commands[0].TrimStart('@');
+                    packet = new CommandPacket(packetType,GetUserData(nickname, rank), command, message);
+                    Server.SendMessage(packet);
                 }
                 else
                 {
-                    packet = new Chat
-                    {
-                        message = message,
-                        user = GetUserData(nickname, rank)
-                    };
+                    packet = new MessagePacket(packetType, GetUserData(nickname, rank), message);
                 }
-                Server.SendMessage(packet);
+                
             }
         }
     }

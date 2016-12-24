@@ -1,7 +1,7 @@
 ﻿using System;
-using Comm;
-using Comm.Extensions;
-using Comm.Packets;
+using ChatAppLib.Data;
+using ChatAppLib;
+using ChatAppLib.Extensions;
 
 namespace TestClient
 {
