@@ -151,7 +151,9 @@ namespace ChatApp.Parser
                 {
                     var doc = new HtmlDocument();
                     doc.LoadHtml(linearize);
-                    Parse(doc);
+
+                    var packet = Parse(doc);
+                    Server.SendMessage(packet);
                 }
                 currUniqueNumber++;
             }
@@ -285,8 +287,9 @@ namespace ChatApp.Parser
         }
 
 
-        private void Parse(HtmlDocument doc)
+        private Packet Parse(HtmlDocument doc)
         {
+            Packet packet = null;
             var node = doc.DocumentNode.FirstChild;
             var attrStr = node.GetAttributeValue("class", "");
             var childs = node.GetRecursiveAttributes("class").ToDictionary(x => x.Value.Split()[0], x => x.OwnerNode.SelectSingleNode("text()")?.InnerText);
@@ -300,21 +303,19 @@ namespace ChatApp.Parser
                     var amount = childs.GetValueOrDefault("txt_money", "0").Replace(",", "");
                     var message = childs.GetValueOrDefault("txt_message", "").Trim();
 
-                    var donationData = new DonationPacket(PacketType.Donation,GetUserData(nickname),message,amount);
-                    Server.SendMessage(donationData);
+                    packet = new DonationPacket(PacketType.Donation,GetUserData(nickname),message,amount);
                 }
 
                 // todo : 입장, 퇴장, 임명, 해임, 닉변경, 도배경고 파싱
                 else
                 {
                     var msg = node.SelectSingleNode("text()").InnerText;
-                    Console.WriteLine(msg);
+                    packet = new Packet(PacketType.Notice, msg);
                 }
 
             // 메세지
             else if (attrStr.Contains("area_chat"))
             {
-                Packet packet = null;
                 var packetType = PacketType.None;
                 var nickname = "";
                 var rank = "";
@@ -323,36 +324,46 @@ namespace ChatApp.Parser
                 // 채팅
                 if (childs.ContainsKey("tit_name"))
                 {
-                    packetType = PacketType.Chat;
+                    packetType = PacketType.Message;
                     nickname = childs.GetValueOrDefault("tit_name", "").Split('(')[0].Trim();
                     rank = childs.GetValueOrDefault("ico_label", "");
                     message = childs.GetValueOrDefault("info_words", "").Trim();
                 }
 
-                //// 쪽지
-                //else if (childs.ContainsKey("tit_whisper"))
-                //{
-                //    //nickname = childs.GetValueOrDefault("tit_whisper", "").Split('(')[0].Trim();
-                //    //message = childs.GetValueOrDefault("info_whisper", "").Trim();
-                //}
-
-                if (message == "") return; // 이모티콘등과 같이 메세지 없을경우
-
-                if (message.StartsWith("@"))
+                // 쪽지
+                else if (childs.ContainsKey("tit_whisper"))
                 {
-                    packetType = PacketType.Command;
-                    var commands = message.Split(new[] {' '}, 2);
-                    message = commands.ElementAtOrDefault(1) != null ? commands[1] : "";
-                    var command = commands[0].TrimStart('@');
-                    packet = new CommandPacket(packetType,GetUserData(nickname, rank), command, message);
-                    Server.SendMessage(packet);
+                    packetType = PacketType.Whisper;
+                    nickname = childs.GetValueOrDefault("tit_whisper", "").Split('(')[0].Trim();
+                    message = childs.GetValueOrDefault("info_whisper", "").Trim();
                 }
-                else
+                if (message == "") return null; // 이모티콘등과 같이 메세지 없을경우
+
+                if (!message.StartsWith("@"))
                 {
                     packet = new MessagePacket(packetType, GetUserData(nickname, rank), message);
                 }
-                
+
+                // 명령어
+                else
+                {
+                    packetType = PacketType.Command;
+
+                    // 명령어 파싱
+                    var commands = message.Split(new[] {' '}, 2);
+                    var command = commands[0].TrimStart('@');
+
+                    // 메세지 갱신
+                    message = commands.ElementAtOrDefault(1) != null ? commands[1] : "";
+                    packet = new CommandPacket(packetType, GetUserData(nickname, rank), command, message);
+                }
             }
+
+            if (packet != null)
+            {
+                Console.WriteLine("[Parse]" + packet);
+            }
+            return packet;
         }
     }
 }

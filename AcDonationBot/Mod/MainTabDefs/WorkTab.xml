@@ -5,7 +5,7 @@
     <label>후원</label>
     <description>후원 정보</description>
     <windowClass>AlcoholV.MainTabWindow.DonationWindow</windowClass>
-	<order>100</order>
+	<order>100</command>
     <defaultToggleKey>F8</defaultToggleKey>
   </MainTabDef>
 </MainTabDefs>

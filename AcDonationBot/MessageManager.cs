@@ -1,35 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ChatAppLib;
 using ChatAppLib.Data;
+using RimWorld;
 using Verse;
 
 namespace AlcoholV
 {
-    public static class MessageManager
+    public class MessageManager
     {
-        public static readonly Queue<Action> ShouldExcute;
-        private static readonly Queue<string> LogQueue;
+        public readonly Queue<string> logQueue = new Queue<string>();
+        public readonly Queue<Action> shouldExcute = new Queue<Action>();
 
-        static MessageManager()
+        private MessageManager()
         {
-            ShouldExcute = new Queue<Action>();
-            LogQueue = new Queue<string>();
         }
 
-        public static void Init()
+        public void Init()
         {
             Client.OnPacket += OnPacket;
             Client.OnLogging += OnLogging;
         }
 
-        public static void Update()
+        public void Update()
         {
-            if (LogQueue.Count == 0) return;
-            Log.Message(LogQueue.Dequeue());
+            if (logQueue.Count == 0) return;
+            Log.Message(logQueue.Dequeue());
         }
 
-        private static void OnPacket(Packet obj)
+        protected void OnPacket(Packet obj)
         {
             var @switch = new Dictionary<Type, Action>
             {
@@ -40,23 +40,69 @@ namespace AlcoholV
             @switch[obj.GetType()]();
         }
 
-        private static void OnLogging(string str)
+        protected void OnLogging(string str)
         {
-            LogQueue.Enqueue(str);
+            logQueue.Enqueue(str);
         }
 
-        private static void OnDonation(DonationPacket donationPacket)
+        protected void OnDonation(DonationPacket don)
         {
-            LogQueue.Enqueue(donationPacket.ToString());
+            if (!AcDonationBot.Instance.donationHandle.Value) return;
+
+            var defName = DataManager.Instance.datas.FindAll(x => x.condition == don.amount).RandomElement().defsName;
+            var localDef = IncidentDef.Named(defName);
+
+
+            if (!localDef.Worker.CanFireNow(Find.VisibleMap))
+                logQueue.Enqueue("Can't fire now");
+
+            Action p = () =>
+            {
+                var incidentParms = new IncidentParms {target = Find.VisibleMap};
+                if (localDef.pointsScaleable)
+                {
+                    var storytellerComp = Find.Storyteller.storytellerComps.First(x => x is StorytellerComp_ThreatCycle || x is StorytellerComp_RandomMain);
+                    incidentParms = storytellerComp.GenerateParms(localDef.category, Find.VisibleMap);
+                }
+                localDef.Worker.TryExecute(incidentParms);
+            };
+            shouldExcute.Enqueue(p);
         }
 
-        private static void OnCommand(CommandPacket command)
+        protected void OnCommand(CommandPacket com)
         {
-            LogQueue.Enqueue(command.ToString());
+            if(com.user.rank == "PD" || (AcDonationBot.Instance.adExcuteHandle.Value && com.user.rank.Equals("AD")))
+            {
+                // com.command
+                var defName = DataManager.Instance.datas.Find(x => x.command == com.command).defsName;
+                var localDef = IncidentDef.Named(defName);
+
+
+                if (!localDef.Worker.CanFireNow(Find.VisibleMap))
+                    logQueue.Enqueue("Can't fire now");
+
+                Action p = () =>
+                {
+                    var incidentParms = new IncidentParms {target = Find.VisibleMap};
+                    if (localDef.pointsScaleable)
+                    {
+                        var storytellerComp = Find.Storyteller.storytellerComps.First(x => x is StorytellerComp_ThreatCycle || x is StorytellerComp_RandomMain);
+                        incidentParms = storytellerComp.GenerateParms(localDef.category, Find.VisibleMap);
+                    }
+                    localDef.Worker.TryExecute(incidentParms);
+                };
+                shouldExcute.Enqueue(p);
+            }
         }
+
+        #region Singleton
+
+        private static MessageManager _instance;
+        public static MessageManager Instance => _instance ?? (_instance = new MessageManager());
+
+        #endregion
     }
 }
-
 
 
 //private static void OnOrder(Command order)
@@ -73,7 +119,7 @@ namespace AlcoholV
 //        var storytellerComp = Find.Storyteller.storytellerComps.First(x => x is StorytellerComp_ThreatCycle || x is StorytellerComp_RandomMain);
 //        parms = storytellerComp.GenerateParms(localDef.category, Find.VisibleMap);
 //    }
-//    t.TryExecute(parms, order.user.nickname, order.command);
+//    t.TryExecute(parms, order.user.nickname, command.command);
 //    //};
 //    //ShouldExcute.Add(a);
 //}

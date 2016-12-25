@@ -25,7 +25,6 @@ namespace ChatAppLib
 
         public static void SendMessage(Packet packet)
         {
-            Console.WriteLine(packet.ToString());
             foreach (var echoService in _broadServices)
                 echoService.SendMessage(packet.Serialize());
         }

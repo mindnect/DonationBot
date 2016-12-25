@@ -4,12 +4,12 @@ namespace ChatAppLib.Data
 {
     public enum PacketType
     {
-        None,
-        Notice,
-        Chat,
-        Whisper,
-        Donation,
-        Command
+        NONE,
+        NOTICE,
+        MESSAGE,
+        WHISPER,
+        SPON,
+        COMMAND
     }
 
     public class User

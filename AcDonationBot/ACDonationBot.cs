@@ -1,124 +1,62 @@
 ﻿using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
-using AlcoholV.Event;
-using ChatAppLib.Data;
+using System.Reflection;
+using System.Xml.Linq;
 using ChatAppLib;
+using ChatAppLib.Data;
 using HugsLib;
+using HugsLib.Settings;
 using RimWorld;
 using UnityEngine.SceneManagement;
 using Verse;
 
 namespace AlcoholV
 {
-    public enum EventExcuteType
+    public enum ExcuteType
     {
         Instant,
         Stack,
         Cool
     }
 
+
     public class AcDonationBot : ModBase
     {
-    
-
         public AcDonationBot()
         {
             Instance = this;
-            MessageManager.Init();
-            Client.Start();
         }
 
-        // Use Singleton
-        public static AcDonationBot Instance { get; private set; }
+        // ReSharper disable once InconsistentNaming
+        public static AcDonationBot Instance;
+        public SettingHandle<bool> adExcuteHandle;
+        public SettingHandle<bool> donationHandle;
 
-        private static void OnMessage(Packet obj)
-        {
-        }
-
-        #region override
+        public static bool isInitialized;
 
         public override string ModIdentifier => "AcDonationBot";
 
-        public override void Initialize()
-        {
-            //Log.MessagePacket(MethodBase.GetCurrentMethod().Name);
-        }
-
-
-        public override void SceneLoaded(Scene scene)
-        {
-            Logger.Message("SceneLoaded:" + scene.name);
-        }
-
-        public override void SettingsChanged()
-        {
-            Logger.Message("SettingsChanged");
-        }
-
         public override void DefsLoaded()
         {
-            var incidentList = new List<IncidentDef>();
-            foreach (var current in DefDatabase<IncidentDef>.AllDefs.Select(x => x).OrderBy(d => d.defName))
-            {
-                var handle = Settings.GetHandle(current.defName, current.label, "", EventExcuteType.Instant, null, "");
-                handle.Unsaved = true;
-                handle.CustomDrawer = rect =>
-                {
-                    if (Widgets.ButtonText(rect, "HugsLib_setting_allNews_button".Translate()))
-                        return true;
-                    return false;
-                };
-            }
-        }
+            // todo : 모드 언로드 구현
+            if (!ModIsActive || isInitialized) return;
 
-        //public override void Tick(int currentTick)
-        //{
-        //}
+            Client.Start();
+            MessageManager.Instance.Init();
+            DataManager.Instance.Init();
+            isInitialized = true;
+
+            donationHandle = Settings.GetHandle("Spon", "후원봇", "", false);
+            adExcuteHandle = Settings.GetHandle("ADExcute", "AD명령", "", false);
+
+        }
 
         public override void Update()
         {
-            //if (Current.ProgramState == ProgramState.Playing)
-                MessageManager.Update();
+            MessageManager.Instance.Update();
         }
 
-        //public override void FixedUpdate()
-        //{
-        //}
-
-        //public override void OnGUI()
-        //{
-        //}
-
-        //public override void WorldLoaded()
-        //{
-
-        //}
-
-        //public override void MapComponentsInitializing(Map map)
-        //{
-
-        //}
-
-        //public override void MapLoaded(Map map)
-        //{
-
-        //}
-
-        //public override void SceneLoaded(Scene scene)
-        //{
-
-        //}
-
-        //public override void SettingsChanged()
-        //{
-
-        //}
-
-        //public override void DefsLoaded()
-        //{
-
-        //}
-
-        #endregion
     }
 }
