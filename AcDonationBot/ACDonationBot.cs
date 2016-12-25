@@ -16,9 +16,9 @@ namespace AlcoholV
 {
     public enum ExcuteType
     {
-        Instant,
-        Stack,
-        Cool
+        INSTANT,
+        STACK,
+        COOL
     }
 
 
@@ -31,8 +31,8 @@ namespace AlcoholV
 
         // ReSharper disable once InconsistentNaming
         public static AcDonationBot Instance;
-        public SettingHandle<bool> adExcuteHandle;
-        public SettingHandle<bool> donationHandle;
+        public static SettingHandle<bool> AdCommandEnable;
+        public static SettingHandle<bool> SponEnable;
 
         public static bool isInitialized;
 
@@ -44,18 +44,18 @@ namespace AlcoholV
             if (!ModIsActive || isInitialized) return;
 
             Client.Start();
-            MessageManager.Instance.Init();
-            DataManager.Instance.Init();
+            PacketManager.Instance.Init();
+            IncidentManager.Instance.Init();
             isInitialized = true;
 
-            donationHandle = Settings.GetHandle("Spon", "후원봇", "", false);
-            adExcuteHandle = Settings.GetHandle("ADExcute", "AD명령", "", false);
+            SponEnable = Settings.GetHandle("Spon", "후원봇", "", false);
+            AdCommandEnable = Settings.GetHandle("ADExcute", "AD명령", "", false);
 
         }
 
         public override void Update()
         {
-            MessageManager.Instance.Update();
+            PacketManager.Instance.Update();
         }
 
     }

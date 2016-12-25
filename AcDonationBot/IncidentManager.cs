@@ -7,23 +7,23 @@ using Verse;
 
 namespace AlcoholV
 {
-    public class DataElement
+    public class CustomIncident
     {
         public string command = "";
         public string condition = "";
         public string defsName = "";
-        public ExcuteType excuteType = ExcuteType.Instant;
+        public ExcuteType excuteType = ExcuteType.INSTANT;
     }
 
     // Singleton
-    public class DataManager
+    public class IncidentManager
     {
         private const string FolderPath = @"c:\ChatApp\";
         private const string FileName = @"Event.xml";
         private const string FilePath = @"c:\ChatApp\Event.xml";
-        public List<DataElement> datas = new List<DataElement>();
+        public static readonly List<CustomIncident> Datas = new List<CustomIncident>();
 
-        private DataManager()
+        private IncidentManager()
         {
         }
 
@@ -44,7 +44,6 @@ namespace AlcoholV
         {
             LoadData();
 
-
             var fsw = new FileSystemWatcher(FolderPath)
             {
                 Filter = FileName,
@@ -62,8 +61,9 @@ namespace AlcoholV
 
         protected void LoadFromXml(XDocument xml)
         {
+            Datas.Clear(); // 불러오기 전에 클리어
             foreach (var node in xml.Root.Elements("Incident"))
-                datas.Add(new DataElement
+                Datas.Add(new CustomIncident
                 {
                     defsName = node.Element("DefName").Value,
                     command = node.Element("Command").Value,
@@ -89,14 +89,14 @@ namespace AlcoholV
 
         private void LoadData(object sender, FileSystemEventArgs e)
         {
-            MessageManager.Instance.logQueue.Enqueue("XML 파일 변경");
+            PacketManager.LogQueue.Enqueue("XML 파일 변경");
             LoadData();
         }
 
         #region Singleton
 
-        private static DataManager _instance;
-        public static DataManager Instance => _instance ?? (_instance = new DataManager());
+        private static IncidentManager _instance;
+        public static IncidentManager Instance => _instance ?? (_instance = new IncidentManager());
 
         #endregion
     }

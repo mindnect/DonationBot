@@ -42,7 +42,7 @@ namespace ChatAppLib.Data
         }
     }
 
-    [XmlInclude(typeof(DonationPacket))]
+    [XmlInclude(typeof(SponPacket))]
     [XmlInclude(typeof(CommandPacket))]
     public class MessagePacket : Packet
     {
@@ -82,11 +82,11 @@ namespace ChatAppLib.Data
     }
 
 
-    public class DonationPacket : MessagePacket
+    public class SponPacket : MessagePacket
     {
         public string amount;
 
-        public DonationPacket(PacketType packetType, User user, string amount, string message) : base(packetType, user, message)
+        public SponPacket(PacketType packetType, User user, string amount, string message) : base(packetType, user, message)
         {
             this.amount = amount;
         }
@@ -96,7 +96,7 @@ namespace ChatAppLib.Data
             return base.ToString() + $"{amount,8}";
         }
 
-        protected DonationPacket()
+        protected SponPacket()
         {
         }
     }

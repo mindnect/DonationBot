@@ -12,7 +12,7 @@ namespace TestServer
             while (true)
             {
                 var str = Console.ReadLine();
-                var packet1  = new CommandPacket(PacketType.SPON, new User()
+                var packet1  = new SponPacket(PacketType.SPON, new User()
                 {
                     nickname = "테스터",
                     platform = "테스트",
@@ -20,7 +20,7 @@ namespace TestServer
                 }, str, "테스트 메세지");
 
 
-                var packet2 = new DonationPacket(PacketType.COMMAND, new User()
+                var packet2 = new CommandPacket(PacketType.COMMAND, new User()
                 {
                     nickname = "테스터",
                     platform = "테스트",

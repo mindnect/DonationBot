@@ -3,18 +3,18 @@ using Verse;
 
 namespace AlcoholV.Event
 {
-    internal class EventComponent : MapComponent
+    internal class IncidentExcuteComponent : MapComponent
     {
         public override void MapComponentUpdate()
         {
-            if (MessageManager.Instance.shouldExcute.Count == 0) return;
-            var t = MessageManager.Instance.shouldExcute.Dequeue();
+            if (PacketManager.ShouldExcuteEvent.Count == 0) return;
+            var t = PacketManager.ShouldExcuteEvent.Dequeue();
             t.Invoke();
         }
 
-        public EventComponent(Map map) : base(map)
+        public IncidentExcuteComponent(Map map) : base(map)
         {
-            MessageManager.Instance.shouldExcute.Clear();
+            PacketManager.ShouldExcuteEvent.Clear();
         }
 
 
