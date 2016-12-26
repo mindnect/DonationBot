@@ -50,20 +50,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AcDonationBot.cs" />
-    <Compile Include="PacketManager.cs" />
+    <Compile Include="Manager\LogManager.cs" />
+    <Compile Include="Manager\PacketManager.cs" />
     <Compile Include="CustomIncident\AcIncidentWorker_RaidEnemy.cs" />
     <Compile Include="MainTabWindow\DonationWindow.cs" />
-    <Compile Include="IncidentManager.cs" />
+    <Compile Include="Manager\DataManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tabs\IWindowTab.cs" />
     <Compile Include="Tabs\WindowTab_Event.cs" />
     <Compile Include="Tabs\WindowTab_Log.cs" />
     <Compile Include="Tabs\WindowTab_Setting.cs" />
-    <Compile Include="Event\IncidentExcuteComponent.cs" />
+    <Compile Include="Event\EventComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Document\TextFile1.txt" />
     <Content Include="Mod\About\About.xml" />
+    <Content Include="Mod\Defs\StorytellerDefs\Storytellers.xml" />
     <Content Include="Mod\MainTabDefs\WorkTab.xml" />
   </ItemGroup>
   <ItemGroup>

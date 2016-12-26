@@ -31,7 +31,7 @@ namespace ChatAppLib
         private static WebSocket WebSocket { get; }
 
         public static event Action<string> OnLogging;
-        public static event Action<Packet> OnPacket;
+        public static event Action<BasePacket> OnPacket;
 
         public static void Start()
         {
@@ -73,7 +73,7 @@ namespace ChatAppLib
         private static void OnMessageHandler(object sender, MessageEventArgs e)
         {
             var xmlData = e.Data;
-            var packet = Xml.Deserialize<Packet>(xmlData);
+            var packet = Xml.Deserialize<BasePacket>(xmlData);
             OnPacket?.Invoke(packet);
         }
 

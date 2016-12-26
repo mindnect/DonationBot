@@ -52,7 +52,7 @@
     <Compile Include="Extensions\Json.cs" />
     <Compile Include="BroadService.cs" />
     <Compile Include="Server.cs" />
-    <Compile Include="Data\Packet.cs" />
+    <Compile Include="Data\BasePacket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

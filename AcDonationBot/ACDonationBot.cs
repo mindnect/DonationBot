@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
+using AlcoholV.Manager;
 using ChatAppLib;
 using ChatAppLib.Data;
 using HugsLib;
@@ -14,12 +15,7 @@ using Verse;
 
 namespace AlcoholV
 {
-    public enum ExcuteType
-    {
-        INSTANT,
-        STACK,
-        COOL
-    }
+    
 
 
     public class AcDonationBot : ModBase
@@ -31,8 +27,8 @@ namespace AlcoholV
 
         // ReSharper disable once InconsistentNaming
         public static AcDonationBot Instance;
-        public static SettingHandle<bool> AdCommandEnable;
-        public static SettingHandle<bool> SponEnable;
+        public static SettingHandle<bool> adCommandSetting;
+        public static SettingHandle<bool> sponSetting;
 
         public static bool isInitialized;
 
@@ -40,22 +36,23 @@ namespace AlcoholV
 
         public override void DefsLoaded()
         {
-            // todo : 모드 언로드 구현
             if (!ModIsActive || isInitialized) return;
 
             Client.Start();
-            PacketManager.Instance.Init();
-            IncidentManager.Instance.Init();
-            isInitialized = true;
 
-            SponEnable = Settings.GetHandle("Spon", "후원봇", "", false);
-            AdCommandEnable = Settings.GetHandle("ADExcute", "AD명령", "", false);
+            PacketManager.Init();
+            LogManager.Init();
+            DataManager.Init();
+
+            isInitialized = true;
+            sponSetting = Settings.GetHandle("Spon", "후원봇", "", false);
+            adCommandSetting = Settings.GetHandle("ADExcute", "AD명령", "", false);
 
         }
 
         public override void Update()
         {
-            PacketManager.Instance.Update();
+            LogManager.Update();
         }
 
     }

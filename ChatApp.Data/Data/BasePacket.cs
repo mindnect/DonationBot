@@ -24,80 +24,80 @@ namespace ChatAppLib.Data
         }
     }
 
-    [XmlInclude(typeof(MessagePacket))]
-    public class Packet
+    [XmlInclude(typeof(MessageBasePacket))]
+    public class BasePacket
     {
         public string message;
         public PacketType packetType;
 
-        public Packet(PacketType packetType, string message)
+        public BasePacket(PacketType packetType, string message)
         {
             this.packetType = packetType;
             this.message = message;
         }
 
-        protected Packet()
+        protected BasePacket()
         {
-            
         }
     }
 
-    [XmlInclude(typeof(SponPacket))]
-    [XmlInclude(typeof(CommandPacket))]
-    public class MessagePacket : Packet
+    [XmlInclude(typeof(SponBasePacket))]
+    [XmlInclude(typeof(CommandBasePacket))]
+    public class MessageBasePacket : BasePacket
     {
         public User user;
 
-        public MessagePacket(PacketType packetType, User user, string message) : base(packetType, message)
+        public MessageBasePacket(PacketType packetType, User user, string message) : base(packetType, message)
         {
             this.user = user;
+        }
+
+        protected MessageBasePacket()
+        {
         }
 
         public override string ToString()
         {
             return $"{packetType,10}" + $"{user}" + $"{message,32}";
         }
-
-        protected MessagePacket()
-        {
-            
-        }
     }
 
-    public class CommandPacket : MessagePacket
+    public class CommandBasePacket : MessageBasePacket
     {
         public string command;
 
-        public CommandPacket(PacketType packetType, User user, string command, string message) : base(packetType, user, message)
+        public CommandBasePacket(PacketType packetType, User user, string message, string command) : base(packetType, user, message)
         {
             this.command = command;
+        }
+
+        protected CommandBasePacket()
+        {
         }
 
         public override string ToString()
         {
             return $"{packetType,10}" + $"{user}" + $"{command,8}" + $"{message,32}";
         }
-
-        protected CommandPacket() { }
     }
 
 
-    public class SponPacket : MessagePacket
+    public class SponBasePacket : MessageBasePacket
     {
         public string amount;
 
-        public SponPacket(PacketType packetType, User user, string amount, string message) : base(packetType, user, message)
+        public SponBasePacket(PacketType packetType, User user, string message, string amount) : base(packetType, user, message)
         {
             this.amount = amount;
+        }
+
+        protected SponBasePacket()
+        {
         }
 
         public override string ToString()
         {
             return base.ToString() + $"{amount,8}";
-        }
-
-        protected SponPacket()
-        {
         }
     }
 }

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<StorytellerDefs>
+  <StorytellerDef>
+    <defName>Potsu</defName>
+    <label>팟수</label>
+    <description>팟수들이 만들어가는 림월드 입니다. 팟수들은 예측이 불가능 하며 전지전능 합니다. 그들은 지구를 터뜨릴 수도, 심폐소생 시켜줄 수도 있습니다. 친절한 팟수들이 많기를 기도합시다.</description>
+    <portraitLarge>large</portraitLarge>
+    <portraitTiny>tiny</portraitTiny>
+    <desiredPopulationMin>4</desiredPopulationMin>
+    <desiredPopulationMax>13</desiredPopulationMax>
+    <desiredPopulationCritical>50</desiredPopulationCritical>
+    <listOrder>1000</listOrder>
+    <comps>
+      <li Class="StorytellerCompProperties_JourneyOffer"/>
+    </comps>
+  </StorytellerDef>
+</StorytellerDefs>

@@ -1,20 +1,21 @@
 ﻿using System;
+using AlcoholV.Manager;
 using Verse;
 
 namespace AlcoholV.Event
 {
-    internal class IncidentExcuteComponent : MapComponent
+    internal class EventComponent : MapComponent
     {
         public override void MapComponentUpdate()
         {
-            if (PacketManager.ShouldExcuteEvent.Count == 0) return;
-            var t = PacketManager.ShouldExcuteEvent.Dequeue();
+            if (PacketManager.Count() == 0) return;
+            var t = PacketManager.Dequeue();
             t.Invoke();
         }
 
-        public IncidentExcuteComponent(Map map) : base(map)
+        public EventComponent(Map map) : base(map)
         {
-            PacketManager.ShouldExcuteEvent.Clear();
+            PacketManager.Clear();
         }
 
 

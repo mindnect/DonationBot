@@ -16,7 +16,7 @@ namespace TestClient
             Client.Stop();
         }
 
-        private static void OnPacket(Packet obj)
+        private static void OnPacket(BasePacket obj)
         {
             Console.WriteLine(obj.message);
         }

@@ -5,8 +5,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using ChatApp.Extension;
 using ChatApp.Win;
-using ChatAppLib.Data;
 using ChatAppLib;
+using ChatAppLib.Data;
 using HtmlAgilityPack;
 using mshtml;
 
@@ -287,9 +287,9 @@ namespace ChatApp.Parser
         }
 
 
-        private Packet Parse(HtmlDocument doc)
+        private BasePacket Parse(HtmlDocument doc)
         {
-            Packet packet = null;
+            BasePacket basePacket = null;
             var node = doc.DocumentNode.FirstChild;
             var attrStr = node.GetAttributeValue("class", "");
             var childs = node.GetRecursiveAttributes("class").ToDictionary(x => x.Value.Split()[0], x => x.OwnerNode.SelectSingleNode("text()")?.InnerText);
@@ -303,20 +303,20 @@ namespace ChatApp.Parser
                     var amount = childs.GetValueOrDefault("txt_money", "0").Replace(",", "");
                     var message = childs.GetValueOrDefault("txt_message", "").Trim();
 
-                    packet = new DonationPacket(PacketType.Donation,GetUserData(nickname),message,amount);
+                    basePacket = new SponBasePacket(PacketType.SPON, GetUserData(nickname), message, amount);
                 }
 
                 // todo : 입장, 퇴장, 임명, 해임, 닉변경, 도배경고 파싱
                 else
                 {
                     var msg = node.SelectSingleNode("text()").InnerText;
-                    packet = new Packet(PacketType.Notice, msg);
+                    basePacket = new BasePacket(PacketType.NOTICE, msg);
                 }
 
             // 메세지
             else if (attrStr.Contains("area_chat"))
             {
-                var packetType = PacketType.None;
+                var packetType = PacketType.NONE;
                 var nickname = "";
                 var rank = "";
                 var message = "";
@@ -324,7 +324,7 @@ namespace ChatApp.Parser
                 // 채팅
                 if (childs.ContainsKey("tit_name"))
                 {
-                    packetType = PacketType.Message;
+                    packetType = PacketType.MESSAGE;
                     nickname = childs.GetValueOrDefault("tit_name", "").Split('(')[0].Trim();
                     rank = childs.GetValueOrDefault("ico_label", "");
                     message = childs.GetValueOrDefault("info_words", "").Trim();
@@ -333,7 +333,7 @@ namespace ChatApp.Parser
                 // 쪽지
                 else if (childs.ContainsKey("tit_whisper"))
                 {
-                    packetType = PacketType.Whisper;
+                    packetType = PacketType.WHISPER;
                     nickname = childs.GetValueOrDefault("tit_whisper", "").Split('(')[0].Trim();
                     message = childs.GetValueOrDefault("info_whisper", "").Trim();
                 }
@@ -341,13 +341,13 @@ namespace ChatApp.Parser
 
                 if (!message.StartsWith("@"))
                 {
-                    packet = new MessagePacket(packetType, GetUserData(nickname, rank), message);
+                    basePacket = new MessageBasePacket(packetType, GetUserData(nickname, rank), message);
                 }
 
                 // 명령어
                 else
                 {
-                    packetType = PacketType.Command;
+                    packetType = PacketType.COMMAND;
 
                     // 명령어 파싱
                     var commands = message.Split(new[] {' '}, 2);
@@ -355,15 +355,13 @@ namespace ChatApp.Parser
 
                     // 메세지 갱신
                     message = commands.ElementAtOrDefault(1) != null ? commands[1] : "";
-                    packet = new CommandPacket(packetType, GetUserData(nickname, rank), command, message);
+                    basePacket = new CommandBasePacket(packetType, GetUserData(nickname, rank), message, command);
                 }
             }
 
-            if (packet != null)
-            {
-                Console.WriteLine("[Parse]" + packet);
-            }
-            return packet;
+            if (basePacket != null)
+                Console.WriteLine("[Parse]" + basePacket);
+            return basePacket;
         }
     }
 }

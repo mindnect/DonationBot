@@ -23,10 +23,10 @@ namespace ChatAppLib
             _broadServices.Add(server);
         }
 
-        public static void SendMessage(Packet packet)
+        public static void SendMessage(BasePacket basePacket)
         {
             foreach (var echoService in _broadServices)
-                echoService.SendMessage(packet.Serialize());
+                echoService.SendMessage(basePacket.Serialize());
         }
 
         public static void StartServer()
