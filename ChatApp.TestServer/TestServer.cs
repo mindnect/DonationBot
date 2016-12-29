@@ -1,6 +1,7 @@
 ﻿using System;
-using ChatAppLib.Data;
+using System.Threading;
 using ChatAppLib;
+using ChatAppLib.Models;
 
 namespace TestServer
 {
@@ -9,25 +10,34 @@ namespace TestServer
         public static void Main(string[] args)
         {
             Server.StartServer();
+            var rand = new Random();
+            
             while (true)
             {
-                var str = Console.ReadLine();
-                var packet1  = new SponBasePacket(PacketType.SPON, new User()
-                {
-                    nickname = "테스터",
-                    platform = "테스트",
-                    rank = "PD"
-                }, "테스트 메세지", str);
+                Thread.Sleep(100);
+                ////100 @공격
+                //var strs = Console.ReadLine().Split(new []{' '},2);
+
+                ////PacketType.COMMAND |
+                //var packet1 = new SponPacket( PacketType.SPON, new User
+                //{
+                //    Nickname = "테스터",
+                //    Platform = "테스트",
+                //    Rank = "PD"
+                //}, message: strs[1], amount: strs[0]);
 
 
-                var packet2 = new CommandBasePacket(PacketType.COMMAND, new User()
-                {
-                    nickname = "테스터",
-                    platform = "테스트",
-                    rank = "PD"
-                }, "테스트 메세지", str);
+                //var str = Console.ReadLine();
+                //var packet2 = new MessagePacket(PacketType.COMMAND| PacketType.MESSAGE, new User()
+                //{
+                //    nickname = "닉네임",
+                //    platform = "tvpot",
+                //    rank = "PD"
+                //}, str);9
 
-                Server.SendMessage(packet2);
+                var testMessage = new MessageModel(PacketType.MESSAGE, new UserModel(), "기본 메세지입니당");
+
+                Server.SendMessage(testMessage);
             }
             //Server.StopServer();
         }

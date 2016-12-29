@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
-using ChatApp.Parser;
 using ChatAppLib;
+using ChatAppLib.Brokers;
 
 namespace ChatApp
 {
@@ -9,16 +9,15 @@ namespace ChatApp
     {
         private static void Main()
         {
-            var chatTVPot = new TvpotParser();
-            chatTVPot.Init();
-
+            var kakoHook = new KakaoBroker();
+            kakoHook.Init();
             Server.StartServer();
             do
             {
                 while (!Console.KeyAvailable)
                 {
                     Thread.Sleep(100);
-                    chatTVPot.Update();
+                    kakoHook.Update();
                 }
             } while (Console.ReadKey(true).Key != ConsoleKey.Escape);
             Server.StopServer();

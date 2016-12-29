@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Forms;
-using mshtml;
 
 namespace JSAssist
 {

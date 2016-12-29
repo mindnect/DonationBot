@@ -1,35 +1,35 @@
-﻿namespace ChatAppLib.Extensions
+﻿using ChatAppLib.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+
+namespace ChatAppLib.Extensions
 {
-    //public class MyTypeResolver : JavaScriptTypeResolver
-    //{
-    //    public override Type ResolveType(string id)
-    //    {
-    //        return typeof(MyTypeResolver).Assembly.GetTypes().First(t => t.Name == id);
-    //    }
+    public static class JSon
+    {
+        static JSon()
+        {
+            JsonConvert.DefaultSettings = () =>
+            {
+                var settings = new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    DefaultValueHandling = DefaultValueHandling.Ignore,
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                };
+                settings.Converters.Add(new StringEnumConverter {CamelCaseText = true});
+                return settings;
+            };
+        }
 
-    //    public override string ResolveTypeId(Type type)
-    //    {
-    //        return type.Name;
-    //    }
-    //}
+        public static string Serialize(this Packet _this)
+        {
+            return JsonConvert.SerializeObject(_this);
+        }
 
-    //public static class JSon
-    //{
-    //    public static JavaScriptSerializer Instance;
-
-    //    static JSon()
-    //    {
-    //        Instance = new JavaScriptSerializer(new MyTypeResolver());
-    //    }
-
-    //    public static string Serialize(this object _this)
-    //    {
-    //        return Instance.Serialize(_this);
-    //    }
-
-    //    public static T Deserialize<T>(string s)
-    //    {
-    //        return Instance.Deserialize<T>(s);
-    //    }
-    //}
+        public static string PrettySerialize(this Packet _this)
+        {
+            return JsonConvert.SerializeObject(_this, Formatting.Indented);
+        }
+    }
 }

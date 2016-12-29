@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
-using ChatAppLib.Data;
 using ChatAppLib.Extensions;
+using ChatAppLib.Models;
 using WebSocketSharp;
 
 namespace ChatAppLib
@@ -31,7 +31,7 @@ namespace ChatAppLib
         private static WebSocket WebSocket { get; }
 
         public static event Action<string> OnLogging;
-        public static event Action<BasePacket> OnPacket;
+        public static event Action<Packet> OnPacket;
 
         public static void Start()
         {
@@ -73,7 +73,7 @@ namespace ChatAppLib
         private static void OnMessageHandler(object sender, MessageEventArgs e)
         {
             var xmlData = e.Data;
-            var packet = Xml.Deserialize<BasePacket>(xmlData);
+            var packet = Xml.Deserialize<Packet>(xmlData);
             OnPacket?.Invoke(packet);
         }
 

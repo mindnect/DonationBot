@@ -152,7 +152,6 @@ namespace JSAssist
 					break;
 				}
 			Label1:
-			    ;
 			}
 			this.lastUniqueNumber = elementUniqueNumber;
 			return true;

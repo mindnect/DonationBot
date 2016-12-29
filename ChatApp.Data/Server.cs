@@ -1,32 +1,34 @@
-using System;
+#region
+
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using ChatAppLib.Data;
 using ChatAppLib.Extensions;
+using ChatAppLib.Models;
 using WebSocketSharp.Server;
+
+#endregion
 
 namespace ChatAppLib
 {
     public class Server
     {
         private const int Port = 14416;
-        private static readonly List<BroadService> _broadServices;
+        private static readonly List<BroadService> BroadServices;
         private static WebSocketServer _wssv;
 
         static Server()
         {
-            _broadServices = new List<BroadService>();
+            BroadServices = new List<BroadService>();
         }
 
         public static void RegisterService(BroadService server)
         {
-            _broadServices.Add(server);
+            BroadServices.Add(server);
         }
 
-        public static void SendMessage(BasePacket basePacket)
+        public static void SendMessage(Packet @base)
         {
-            foreach (var echoService in _broadServices)
-                echoService.SendMessage(basePacket.Serialize());
+            foreach (var echoService in BroadServices)
+                echoService.SendMessage(@base.Serialize());
         }
 
         public static void StartServer()
@@ -50,7 +52,7 @@ namespace ChatAppLib
 
         public static void UnregisterService(BroadService server)
         {
-            _broadServices.Remove(server);
+            BroadServices.Remove(server);
         }
     }
 }

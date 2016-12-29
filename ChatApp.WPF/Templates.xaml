@@ -1,0 +1,16 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:ChatApp.WPF"
+                    xmlns:models="clr-namespace:ChatAppLib.Models;assembly=ChatAppLib">
+
+
+    <DataTemplate x:Key="MessagePacketTemplate" DataType="{x:Type models:MessageModel}">
+        <StackPanel>
+            <Grid>
+                <TextBlock Text="{Binding User.Nickname}"/>
+                <TextBlock Text="{Binding User.Platform}"/>
+                <TextBlock Text="{Binding User.Rank}"/>
+            </Grid>
+        </StackPanel>
+    </DataTemplate>
+</ResourceDictionary>

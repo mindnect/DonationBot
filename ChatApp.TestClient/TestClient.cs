@@ -1,7 +1,7 @@
 ﻿using System;
-using ChatAppLib.Data;
 using ChatAppLib;
 using ChatAppLib.Extensions;
+using ChatAppLib.Models;
 
 namespace TestClient
 {
@@ -16,9 +16,9 @@ namespace TestClient
             Client.Stop();
         }
 
-        private static void OnPacket(BasePacket obj)
+        private static void OnPacket(MessageModel packet)
         {
-            Console.WriteLine(obj.message);
+            Console.WriteLine(packet.Message);
         }
 
         private static void OnMessage(string packet)
