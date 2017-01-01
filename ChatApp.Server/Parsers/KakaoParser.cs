@@ -2,29 +2,81 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using ChatAppLib.Models;
-using ChatAppLib.Win32;
+using ChatApp.Server.Models;
+using ChatApp.Server.Win32;
 using HtmlAgilityPack;
 using mshtml;
-using static ChatApp.Extension.HtmlExtension;
+using static ChatApp.Server.Extensions.HtmlExtension;
 
-namespace ChatAppLib.Parsers
+namespace ChatApp.Server.Parsers
 {
     public class KakaoParser
     {
-        private const Platform Platform = Models.Platform.KAKAO;
+        public KakaoParser()
+        {
+            SelectPotPlayer();
+        }
 
-        //protected HTMLDocument document;
-        protected HTMLDocument document;
+        private const Platform Platform = Models.Platform.kakao;
+        private Dictionary<IntPtr, string> _playerList;
         protected int lastLength;
         protected Dictionary<string, User> mapUser;
         protected Stack<IHTMLElement> parseStack;
-        protected bool readyToUpdate;
 
-        public Dictionary<IntPtr, string> PlayerList { get; protected set; }
-        public IntPtr SelectedPlayerHwnd { get; protected set; } = IntPtr.Zero;
+        public HTMLDocument Document { get; protected set; }
 
-        public void SelectPotPlayer()
+        public bool Ready { get; protected set; }
+
+        protected Dictionary<IntPtr, string> PlayerList
+        {
+            get
+            {
+                _playerList = WinAPI.FindAllWindowsWithClassNames("PotPlayer", "PotPlayer64");
+                return _playerList;
+            }
+        }
+
+        protected IntPtr SelectedPlayerHwnd { get; set; } = IntPtr.Zero;
+
+        public void Update()
+        {
+            if (Ready)
+                try
+                {
+                    UpdateRead();
+                    UpdateParse();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("[Error] " + e.Message);
+                    Ready = false;
+                }
+            else
+                Init();
+        }
+
+        public void Init()
+        {
+            if (PlayerList.ContainsKey(SelectedPlayerHwnd))
+            {
+                Document = FindChatRoot(SelectedPlayerHwnd);
+                if (Document != null)
+                {
+                    parseStack = new Stack<IHTMLElement>();
+                    mapUser = new Dictionary<string, User>();
+                    lastLength = Document.body.children.Length;
+                    SetElemenentAsParsed((IHTMLElement) Document.body.children[lastLength - 1]); // set last html element as parsed
+                    Ready = true;
+                    Console.WriteLine("준비 완료");
+                }
+            }
+            else
+            {
+                SelectPotPlayer();
+            }
+        }
+
+        protected void SelectPotPlayer()
         {
             if (PlayerList.Count == 1)
             {
@@ -34,9 +86,7 @@ namespace ChatAppLib.Parsers
             {
                 Console.WriteLine("하나 이상의 팟플레이어 실행중");
                 for (var i = 0; i < PlayerList.Count; i++)
-                {
                     Console.WriteLine(i + 1 + " : " + PlayerList.ElementAt(i).Value);
-                }
 
                 var userInput = Console.ReadKey(true);
                 var index = int.Parse(userInput.KeyChar.ToString()) - 1;
@@ -49,31 +99,38 @@ namespace ChatAppLib.Parsers
             }
         }
 
-        public void Update()
+        protected static HTMLDocument FindChatRoot(IntPtr hwnd)
         {
-            if (readyToUpdate)
+            // case of seperated chat window
+            var currInstance = WinAPI.GetWndInstance(hwnd);
+            var seperatedChatHwnds = WinAPI.FindAllWindowsWithCaption("채팅/덧글");
+            foreach (var currChatHwnd in seperatedChatHwnds)
             {
-                try
+                var currChatWndInstance = WinAPI.GetWndInstance(currChatHwnd.Key);
+                if (currInstance == currChatWndInstance)
                 {
-                    UpdateRead();
-                    UpdateParse();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("[Error] " + e.Message);
-                    readyToUpdate = false;
+                    var schilds = WinAPI.GetChildsWithClassName(currChatHwnd.Key, "Internet Explorer_Server");
+                    foreach (var intPtr in schilds)
+                    {
+                        var doc = WinAPI.GetHtmlDocumentOfWnd(intPtr);
+
+                        var t = FindElementWithClassName(doc, "wrap_chat");
+                        if (t != null)
+                            return doc;
+                    }
                 }
             }
-            else
+
+            // case of embeded chat window 
+            var childs = WinAPI.GetChildsWithClassName(hwnd, "Internet Explorer_Server");
+            foreach (var intPtr in childs)
             {
-                Init();
+                var doc = WinAPI.GetHtmlDocumentOfWnd(intPtr);
+                var tempElem = FindElementWithClassName(doc, "wrap_chat");
+                if (tempElem != null)
+                    return doc;
             }
-        }
-
-
-        public void RefreshPlayerList()
-        {
-            PlayerList = WinAPI.FindAllWindowsWithClassNames("PotPlayer", "PotPlayer64");
+            return null;
         }
 
         protected virtual void OnUserAdded(User newUser)
@@ -94,17 +151,17 @@ namespace ChatAppLib.Parsers
             return user;
         }
 
-        private void UpdateRead()
+        protected void UpdateRead()
         {
-            var currLength = document.body.children.Length;
+            var currLength = Document.body.children.Length;
 
             if (currLength != lastLength)
             {
                 for (var index = currLength - 1; index >= 0; index--) // reverse loop
                 {
-                    var isParsed = GetIsParsedOfElement(document.body.children.item(index));
+                    var isParsed = GetIsParsedOfElement(Document.body.children.item(index));
                     if (isParsed) break;
-                    IHTMLElement element = document.body.children.item(index);
+                    IHTMLElement element = Document.body.children.item(index);
                     parseStack.Push(element);
                     SetElemenentAsParsed(element);
                 }
@@ -112,7 +169,7 @@ namespace ChatAppLib.Parsers
             }
         }
 
-        private void UpdateParse()
+        protected void UpdateParse()
         {
             while (parseStack.Count > 0)
             {
@@ -134,7 +191,7 @@ namespace ChatAppLib.Parsers
             }
         }
 
-        private Packet Parse(HtmlDocument doc)
+        protected Packet Parse(HtmlDocument doc)
         {
             Packet packet = null;
 
@@ -143,8 +200,6 @@ namespace ChatAppLib.Parsers
             var childs = node.GetRecursiveAttributes("class").ToDictionary(x => x.Value.Split()[0], x => x.OwnerNode.SelectSingleNode("text()")?.InnerText);
             // 알림
             if (currAttr.Contains("txt_notice"))
-            {
-                // 후원
                 if (currAttr.Equals("txt_notice area_space box_sticker"))
                 {
                     var nickname = childs.GetValueOrDefault("txt_spon", "").Split('님')[0];
@@ -180,12 +235,9 @@ namespace ChatAppLib.Parsers
                         packet = PacketHelper.CreateLog(message);
                     }
                 }
-            }
 
             // 메세지
             else if (currAttr.Contains("area_chat"))
-            {
-                // 채팅
                 if (childs.ContainsKey("tit_name"))
                 {
                     var nickname = childs.GetValueOrDefault("tit_name", "").Split('(')[0].Trim();
@@ -203,69 +255,8 @@ namespace ChatAppLib.Parsers
                     var user = GetUserData(nickname);
                     packet = PacketHelper.CreateChat(user, message);
                 }
-            }
 
             return packet;
-        }
-
-        private void Init()
-        {
-            RefreshPlayerList();
-            if (PlayerList.ContainsKey(SelectedPlayerHwnd))
-            {
-                document = FindChatRoot(SelectedPlayerHwnd);
-                if (document != null)
-                {
-                    parseStack = new Stack<IHTMLElement>();
-                    mapUser = new Dictionary<string, User>();
-                    lastLength = document.body.children.Length;
-                    SetElemenentAsParsed((IHTMLElement) document.body.children[lastLength - 1]); // set last html element as parsed
-                    readyToUpdate = true;
-                    Console.WriteLine("준비 완료");
-                }
-            }
-            else
-            {
-                SelectPotPlayer();
-            }
-        }
-
-        private static HTMLDocument FindChatRoot(IntPtr hwnd)
-        {
-            // case of seperated chat window
-            var currInstance = WinAPI.GetWndInstance(hwnd);
-            var seperatedChatHwnds = WinAPI.FindAllWindowsWithCaption("채팅/덧글");
-            foreach (var currChatHwnd in seperatedChatHwnds)
-            {
-                var currChatWndInstance = WinAPI.GetWndInstance(currChatHwnd.Key);
-                if (currInstance == currChatWndInstance)
-                {
-                    var schilds = WinAPI.GetChildsWithClassName(currChatHwnd.Key, "Internet Explorer_Server");
-                    foreach (var intPtr in schilds)
-                    {
-                        var doc = WinAPI.GetHtmlDocumentOfWnd(intPtr);
-
-                        var t = FindElementWithClassName(doc, "wrap_chat");
-                        if (t != null)
-                        {
-                            return doc;
-                        }
-                    }
-                }
-            }
-
-            // case of embeded chat window 
-            var childs = WinAPI.GetChildsWithClassName(hwnd, "Internet Explorer_Server");
-            foreach (var intPtr in childs)
-            {
-                var doc = WinAPI.GetHtmlDocumentOfWnd(intPtr);
-                var tempElem = FindElementWithClassName(doc, "wrap_chat");
-                if (tempElem != null)
-                {
-                    return doc;
-                }
-            }
-            return null;
         }
     }
 }

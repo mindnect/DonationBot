@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using mshtml;
 
-namespace ChatAppLib.Win32
+namespace ChatApp.Server.Win32
 {
     public class WinAPI
     {
@@ -44,7 +44,6 @@ namespace ChatAppLib.Win32
             var ret = new Dictionary<IntPtr, string>();
             var hwnd = IntPtr.Zero;
             foreach (var clasName in classNames)
-            {
                 do
                 {
                     hwnd = FindWindowEx(IntPtr.Zero, hwnd, clasName, null);
@@ -53,7 +52,6 @@ namespace ChatAppLib.Win32
                     GetWindowText(hwnd, stringBuilder, 128);
                     ret.Add(hwnd, stringBuilder.ToString());
                 } while (hwnd != IntPtr.Zero);
-            }
             return ret;
         }
 
@@ -109,12 +107,8 @@ namespace ChatAppLib.Win32
         {
             var ret = new List<IntPtr>();
             foreach (var childWindow in GetChildsFromParent(parent))
-            {
                 if (GetClassNameWnd(childWindow) == className)
-                {
                     ret.Add(childWindow);
-                }
-            }
             return ret;
         }
 
@@ -131,16 +125,14 @@ namespace ChatAppLib.Win32
             {
                 SendMessageTimeout(hWnd, iMsg, 0, 0, SMTO_ABORTIFHUNG, 1000, ref iRes);
                 if (iRes != 0)
-                {
                     ObjectFromLresult(iRes, ref IID_IHTMLDocument, 0, ref document);
-                }
             }
             return document;
         }
 
         public static int GetWndInstance(IntPtr hwnd)
         {
-            return GetWindowLong(hwnd,-6);
+            return GetWindowLong(hwnd, -6);
         }
 
 

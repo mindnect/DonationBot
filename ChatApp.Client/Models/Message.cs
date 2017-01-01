@@ -1,15 +1,14 @@
-namespace ChatAppLib.Models
+namespace ChatApp.Client.Models
 {
     public class Message
     {
+        public string msg { get; set; }
 
-        public string Text { get; set; }
-
-        public string Param { get; set; }
+        public string param { get; set; }
 
         public override string ToString()
         {
-            return $"{Param,10} {Text,16}";
+            return $"{param,10} {msg,16}";
         }
     }
 }

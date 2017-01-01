@@ -7,8 +7,8 @@ namespace ChatApp.ClientLib
     {
         public static void Main()
         {
-            Client.IsConsole = true;
-            Client.Start();
+            Client.Client.IsConsole = true;
+            Client.Client.Start();
             Console.ReadKey();
 
         }

@@ -1,14 +1,9 @@
-#region
-
-using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using ChatAppLib.Models;
+using ChatApp.Server.Models;
 using mshtml;
 
-#endregion
-
-namespace ChatAppLib.Brokers
+namespace ChatApp.Server.Parsers
 {
     public class Parser
     {
@@ -44,7 +39,6 @@ namespace ChatAppLib.Brokers
             return false;
         }
 
-  
 
         protected void Init(Platform platform)
         {

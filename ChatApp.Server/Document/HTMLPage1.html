@@ -1,382 +1,384 @@
 ﻿<head>
-	<meta viewerversion="1.6.63856">
-	<meta casterversion="0.0.0">
-	<meta chid="dchat@tvpot.860@203.133.165.113@9003@40416195@1">
-	<script>
-	    var DIVS = new Array();
-
-	    function WriteDiv(html) {
-	        var div = document.createElement("div");
-	        div.innerHTML = html;
-	        document.body.appendChild(div);
-	        if (DIVS.length > 1000) {
-	            var DelCnt = DIVS.length / 5;
-	            for (var i = 0; i < DelCnt; i++) {
-	                var old = DIVS[2];
-	                document.body.removeChild(old);
-	                DIVS.splice(2, 1);
-	            }
-	        }
-	        DIVS.push(div);
-	    }
-
-	    function changeBkgnd(color) {
-	        document.body.style.background = color;
-	    }
-	</script>
-	<style type="text/css">
-		body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, textarea, p, blockquote, th, td, input, select, textarea, button {
-			margin: 0;
-			padding: 0
-		}
-
-		fieldset, img { border: 0 none }
-
-		dl, ul, ol, menu, li { list-style: none }
-
-		blockquote, q { quotes: none }
-
-		blockquote:before, blockquote:after, q:before, q:after {
-			content: '';
-			content: none
-		}
-
-		input, select, textarea, button { vertical-align: middle }
-
-		input::-ms-clear { display: none }
-
-		button {
-			background-color: transparent;
-			border: 0 none;
-			cursor: pointer
-		}
-
-		html, body {
-			border: 0 none;
-			height: 100%;
-			margin: 0px;
-			overflow: hidden;
-			padding: 0px;
-		}
-
-		body {
-			background: #ffffff;
-			overflow-x: hidden;
-			overflow-y: auto;
-			padding-left: 10px;
-			position: relative;
-			scrollbar-3dlight-color: #c8c8c8;
-			scrollbar-arrow-color: #6d7580;
-			scrollbar-base-color: #f4f4f4;
-			scrollbar-darkshadow-color: #c8c8c8;
-			scrollbar-face-color: #fbfbfb;
-			scrollbar-highlight-color: #fbfbfb;
-			scrollbar-shadow-color: #fbfbfb;
-			scrollbar-track-color: #f4f4f4;
-		}
-
-		body, th, td, input, select, textarea, button {
-			color: #333;
-			font-family: '맑은 고딕', malgun gothic, '돋움', dotum, sans-serif;
-			font-size: 12px;
-			line-height: 1.5;
-		}
-
-		a {
-			color: #333;
-			text-decoration: none
-		}
-
-		a:active, a:hover { text-decoration: underline }
-
-		a:active { background-color: transparent }
-
-		address, caption, cite, code, dfn, em, var {
-			font-style: normal;
-			font-weight: normal
-		}
-
-		.screen_out {
-			height: 0;
-			line-height: 0;
-			overflow: hidden;
-			position: absolute;
-			text-indent: -9999px;
-			width: 0;
-		}
-
-		.emph_s { color: #2ea4ff }
-
-		.emph_b { color: #2d72ac }
-
-		.emph_r { color: #d53541 }
-
-		.ico_label {
-			background: url(http://t1.daumcdn.net/tvpot/service/2014/potplayer/ico_label_150818.png) no-repeat 0 0;
-			display: block;
-			text-indent: -9999px
-		}
-
-		.area_chat { padding: 5px 0; }
-
-		.ico_pd {
-			background-position: 0 -175px;
-			float: left;
-			height: 11px;
-			margin: 5px 4px 0 0;
-			width: 15px;
-		}
-
-		.ico_s {
-			background-position: 0 -200px;
-			float: left;
-			height: 11px;
-			margin: 5px 4px 0 0;
-			width: 12px;
-		}
-
-		.ico_gm {
-			background-position: 0 -225px;
-			float: left;
-			height: 11px;
-			margin: 5px 4px 0 0;
-			width: 15px;
-		}
-
-		.ico_ad {
-			background-position: 0 -250px;
-			float: left;
-			height: 11px;
-			margin: 5px 4px 0 0;
-			width: 15px;
-		}
-
-		.tit_name {
-			color: #717481;
-			display: block;
-			font-weight: normal;
-			overflow: hidden;
-			word-break: break-all;
-		}
-
-		.txt_time {
-			color: #acaeb8;
-			display: inline-block;
-			font-size: 11px;
-			margin: 1px 0 0 5px;
-		}
-
-		.info_words {
-			color: #212228;
-			word-break: break-all
-		}
-
-		.txt_notice {
-			color: #acaeb8;
-			font-size: 11px;
-			line-height: 13px;
-			padding: 6px 0;
-		}
-
-		.link_emph { color: #717481 }
-
-		.tit_whisper {
-			color: #ac34c2;
-			display: block;
-			font-weight: normal;
-		}
-
-		.info_whisper { color: #ac34c2 }
-
-		.txt_caution {
-			color: #d53541;
-			font-size: 11px;
-			padding: 6px 0;
-		}
-
-		.txt_reconnect {
-			color: #d53541;
-			font-size: 11px;
-			padding: 37px 0;
-		}
-
-		.link_reconnect {
-			color: #2ea4ff;
-			text-decoration: underline;
-		}
-
-		.link_whisper { color: #ac34c2 }
-
-		.img_emoticon {
-			margin: 3px 5px 0;
-			vertical-align: bottom
-		}
-
-		.txt_regulation {
-			color: #2ea4ff;
-			font-size: 11px;
-			line-height: 13px;
-			padding: 10px 0 7px;
-		}
-
-		.txt_enter {
-			color: #2ea4ff;
-			font-size: 11px;
-			line-height: 13px;
-			padding: 10px 0 7px;
-		}
-
-		.area_space { padding-top: 20px }
-
-		.area_sticker {
-			display: block;
-			margin: 0 auto;
-			position: relative;
-		}
-
-		.type_01 {
-			height: 87px;
-			width: 103px;
-		}
-
-		.type_02 {
-			height: 116px;
-			width: 145px;
-		}
-
-		.type_03 {
-			height: 145px;
-			width: 163px;
-		}
-
-		.type_04 {
-			height: 176px;
-			width: 180px;
-		}
-
-		.txt_money {
-			color: #fff;
-			font-size: 13px;
-			left: 0;
-			position: absolute;
-			text-align: center;
-			width: 100%;
-		}
-
-		.txt_type01 { top: 65px }
-
-		.txt_type02 { top: 82px }
-
-		.txt_type03 { top: 107px }
-
-		.txt_type04 { top: 136px }
-
-		.txt_spon {
-			color: #000;
-			font-size: 12px;
-			margin-top: 7px;
-			text-align: center;
-		}
-
-		.txt_message {
-			color: #825000;
-			font-size: 12px;
-			line-height: 16px;
-			margin: 7px 26px 0;
-			min-width: 153px;
-			padding: 6px 0;
-			position: relative;
-			text-align: center;
-			word-break: break-all;
-			word-break: break-word;
-		}
-
-		.box_sticker {
-			margin-left: -10px;
-			position: relative;
-			text-align: center
-		}
-
-		.box_type01 { background-color: #fdf0eb }
-
-		.box_type02 { background-color: #fdecef }
-
-		.box_type03 { background-color: #fdedf4 }
-
-		.box_type04 { background-color: #fde8e4 }
-
-		.ico_tail01 {
-			background-position: 0 -365px;
-			height: 5px;
-			left: 50%;
-			margin-left: -5px;
-			position: absolute;
-			top: -5px;
-			width: 10px;
-		}
-
-		.ico_tail02 {
-			background-position: 0 -375px;
-			height: 5px;
-			left: 50%;
-			margin-left: -5px;
-			position: absolute;
-			top: -5px;
-			width: 10px;
-		}
-
-		.ico_tail03 {
-			background-position: 0 -385px;
-			height: 5px;
-			left: 50%;
-			margin-left: -5px;
-			position: absolute;
-			top: -5px;
-			width: 10px;
-		}
-
-		.ico_tail04 {
-			background-position: 0 -395px;
-			height: 5px;
-			left: 50%;
-			margin-left: -5px;
-			position: absolute;
-			top: -5px;
-			width: 10px;
-		}
-
-		#listArea {
-			clear: both;
-			height: 100%;
-			overflow: hidden;
-			width: 100%;
-		}
-
-		#outterArea {
-			float: left;
-			height: 100%;
-			overflow: hidden;
-			width: 100%;
-		}
-
-		#innerArea {
-			clear: both;
-			position: absolute;
-			width: 100%;
-			z-index: 1;
-		}
-	</style>
+<meta viewerversion="1.6.63856">
+<meta casterversion="0.0.0">
+<meta chid="dchat@tvpot.860@203.133.165.113@9003@40416195@1">
+<script>
+    var DIVS = new Array();
+
+    function WriteDiv(html) {
+        var div = document.createElement("div");
+        div.innerHTML = html;
+        document.body.appendChild(div);
+        if (DIVS.length > 1000) {
+            var DelCnt = DIVS.length / 5;
+            for (var i = 0; i < DelCnt; i++) {
+                var old = DIVS[2];
+                document.body.removeChild(old);
+                DIVS.splice(2, 1);
+            }
+        }
+        DIVS.push(div);
+    }
+
+    function changeBkgnd(color) {
+        document.body.style.background = color;
+    }
+</script>
+<style type="text/css">
+	body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, textarea, p, blockquote, th, td, input, select, textarea, button {
+		margin: 0;
+		padding: 0
+	}
+
+	fieldset, img { border: 0 none }
+
+	dl, ul, ol, menu, li { list-style: none }
+
+	blockquote, q { quotes: none }
+
+	blockquote:before, blockquote:after, q:before, q:after {
+		content: '';
+		content: none
+	}
+
+	input, select, textarea, button { vertical-align: middle }
+
+	input::-ms-clear { display: none }
+
+	button {
+		background-color: transparent;
+		border: 0 none;
+		cursor: pointer
+	}
+
+	html, body {
+		border: 0 none;
+		height: 100%;
+		margin: 0px;
+		overflow: hidden;
+		padding: 0px;
+	}
+
+	body {
+		background: #ffffff;
+		overflow-x: hidden;
+		overflow-y: auto;
+		padding-left: 10px;
+		position: relative;
+		scrollbar-3dlight-color: #c8c8c8;
+		scrollbar-arrow-color: #6d7580;
+		scrollbar-base-color: #f4f4f4;
+		scrollbar-darkshadow-color: #c8c8c8;
+		scrollbar-face-color: #fbfbfb;
+		scrollbar-highlight-color: #fbfbfb;
+		scrollbar-shadow-color: #fbfbfb;
+		scrollbar-track-color: #f4f4f4;
+	}
+
+	body, th, td, input, select, textarea, button {
+		color: #333;
+		font-family: '맑은 고딕', malgun gothic, '돋움', dotum, sans-serif;
+		font-size: 12px;
+		line-height: 1.5;
+	}
+
+	a {
+		color: #333;
+		text-decoration: none
+	}
+
+	a:active, a:hover { text-decoration: underline }
+
+	a:active { background-color: transparent }
+
+	address, caption, cite, code, dfn, em, var {
+		font-style: normal;
+		font-weight: normal
+	}
+
+	.screen_out {
+		height: 0;
+		line-height: 0;
+		overflow: hidden;
+		position: absolute;
+		text-indent: -9999px;
+		width: 0;
+	}
+
+	.emph_s { color: #2ea4ff }
+
+	.emph_b { color: #2d72ac }
+
+	.emph_r { color: #d53541 }
+
+	.ico_label {
+		background: url(http://t1.daumcdn.net/tvpot/service/2014/potplayer/ico_label_150818.png) no-repeat 0 0;
+		display: block;
+		text-indent: -9999px
+	}
+
+	.area_chat { padding: 5px 0; }
+
+	.ico_pd {
+		background-position: 0 -175px;
+		float: left;
+		height: 11px;
+		margin: 5px 4px 0 0;
+		width: 15px;
+	}
+
+	.ico_s {
+		background-position: 0 -200px;
+		float: left;
+		height: 11px;
+		margin: 5px 4px 0 0;
+		width: 12px;
+	}
+
+	.ico_gm {
+		background-position: 0 -225px;
+		float: left;
+		height: 11px;
+		margin: 5px 4px 0 0;
+		width: 15px;
+	}
+
+	.ico_ad {
+		background-position: 0 -250px;
+		float: left;
+		height: 11px;
+		margin: 5px 4px 0 0;
+		width: 15px;
+	}
+
+	.tit_name {
+		color: #717481;
+		display: block;
+		font-weight: normal;
+		overflow: hidden;
+		word-break: break-all;
+	}
+
+	.txt_time {
+		color: #acaeb8;
+		display: inline-block;
+		font-size: 11px;
+		margin: 1px 0 0 5px;
+	}
+
+	.info_words {
+		color: #212228;
+		word-break: break-all
+	}
+
+	.txt_notice {
+		color: #acaeb8;
+		font-size: 11px;
+		line-height: 13px;
+		padding: 6px 0;
+	}
+
+	.link_emph { color: #717481 }
+
+	.tit_whisper {
+		color: #ac34c2;
+		display: block;
+		font-weight: normal;
+	}
+
+	.info_whisper { color: #ac34c2 }
+
+	.txt_caution {
+		color: #d53541;
+		font-size: 11px;
+		padding: 6px 0;
+	}
+
+	.txt_reconnect {
+		color: #d53541;
+		font-size: 11px;
+		padding: 37px 0;
+	}
+
+	.link_reconnect {
+		color: #2ea4ff;
+		text-decoration: underline;
+	}
+
+	.link_whisper { color: #ac34c2 }
+
+	.img_emoticon {
+		margin: 3px 5px 0;
+		vertical-align: bottom
+	}
+
+	.txt_regulation {
+		color: #2ea4ff;
+		font-size: 11px;
+		line-height: 13px;
+		padding: 10px 0 7px;
+	}
+
+	.txt_enter {
+		color: #2ea4ff;
+		font-size: 11px;
+		line-height: 13px;
+		padding: 10px 0 7px;
+	}
+
+	.area_space { padding-top: 20px }
+
+	.area_sticker {
+		display: block;
+		margin: 0 auto;
+		position: relative;
+	}
+
+	.type_01 {
+		height: 87px;
+		width: 103px;
+	}
+
+	.type_02 {
+		height: 116px;
+		width: 145px;
+	}
+
+	.type_03 {
+		height: 145px;
+		width: 163px;
+	}
+
+	.type_04 {
+		height: 176px;
+		width: 180px;
+	}
+
+	.txt_money {
+		color: #fff;
+		font-size: 13px;
+		left: 0;
+		position: absolute;
+		text-align: center;
+		width: 100%;
+	}
+
+	.txt_type01 { top: 65px }
+
+	.txt_type02 { top: 82px }
+
+	.txt_type03 { top: 107px }
+
+	.txt_type04 { top: 136px }
+
+	.txt_spon {
+		color: #000;
+		font-size: 12px;
+		margin-top: 7px;
+		text-align: center;
+	}
+
+	.txt_message {
+		color: #825000;
+		font-size: 12px;
+		line-height: 16px;
+		margin: 7px 26px 0;
+		min-width: 153px;
+		padding: 6px 0;
+		position: relative;
+		text-align: center;
+		word-break: break-all;
+		word-break: break-word;
+	}
+
+	.box_sticker {
+		margin-left: -10px;
+		position: relative;
+		text-align: center
+	}
+
+	.box_type01 { background-color: #fdf0eb }
+
+	.box_type02 { background-color: #fdecef }
+
+	.box_type03 { background-color: #fdedf4 }
+
+	.box_type04 { background-color: #fde8e4 }
+
+	.ico_tail01 {
+		background-position: 0 -365px;
+		height: 5px;
+		left: 50%;
+		margin-left: -5px;
+		position: absolute;
+		top: -5px;
+		width: 10px;
+	}
+
+	.ico_tail02 {
+		background-position: 0 -375px;
+		height: 5px;
+		left: 50%;
+		margin-left: -5px;
+		position: absolute;
+		top: -5px;
+		width: 10px;
+	}
+
+	.ico_tail03 {
+		background-position: 0 -385px;
+		height: 5px;
+		left: 50%;
+		margin-left: -5px;
+		position: absolute;
+		top: -5px;
+		width: 10px;
+	}
+
+	.ico_tail04 {
+		background-position: 0 -395px;
+		height: 5px;
+		left: 50%;
+		margin-left: -5px;
+		position: absolute;
+		top: -5px;
+		width: 10px;
+	}
+
+	#listArea {
+		clear: both;
+		height: 100%;
+		overflow: hidden;
+		width: 100%;
+	}
+
+	#outterArea {
+		float: left;
+		height: 100%;
+		overflow: hidden;
+		width: 100%;
+	}
+
+	#innerArea {
+		clear: both;
+		position: absolute;
+		width: 100%;
+		z-index: 1;
+	}
+</style>
 
 </head>
 <body>
 <div class="wrap_chat" parsed="true">
 </div>
 <div parsed="true">
-	<div class="txt_regulation"><span class="screen_out" style="text-indent: 0px;">알림</span>채팅 도배, 태그 사용 등 비정상적으로 채팅을 이용하는 사용자는 서비스 규제 및 민형사 책임을 물을 수 있습니다.
+	<div class="txt_regulation">
+		<span class="screen_out" style="text-indent: 0px;">알림</span>채팅 도배, 태그 사용 등 비정상적으로 채팅을 이용하는 사용자는 서비스 규제 및 민형사 책임을 물을 수 있습니다.
 	</div>
 </div>
 <div parsed="true">
-	<div class="txt_enter"><span class="screen_out" style="text-indent: 0px;">알림</span>본방에 입장하였습니다.
+	<div class="txt_enter">
+		<span class="screen_out" style="text-indent: 0px;">알림</span>본방에 입장하였습니다.
 	</div>
 </div>
 <div parsed="true">
@@ -423,7 +425,8 @@
 		<strong class="tit_name">
 			L행복 (pcsgho****)<span class="txt_time">11:49</span>
 		</strong>
-		<div class="info_words" style="color: rgb(51, 51, 51); font-family: 맑은 고딕; font-size: 12px; font-weight: normal;">큰그림을 그려야 하는대.....큰그림.......... <br>........작네 작아........
+		<div class="info_words" style="color: rgb(51, 51, 51); font-family: 맑은 고딕; font-size: 12px; font-weight: normal;">
+			큰그림을 그려야 하는대.....큰그림.......... <br>........작네 작아........
 		</div>
 	</div>
 

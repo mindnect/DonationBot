@@ -1,15 +1,9 @@
-#region
-
 using System.Collections.Generic;
-using ChatAppLib.Extensions;
-using ChatAppLib.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using ChatApp.Server.Extensions;
+using ChatApp.Server.Models;
 using WebSocketSharp.Server;
 
-#endregion
-
-namespace ChatAppLib
+namespace ChatApp.Server
 {
     public class Server
     {

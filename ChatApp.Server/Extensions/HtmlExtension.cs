@@ -4,7 +4,7 @@ using System.Linq;
 using HtmlAgilityPack;
 using mshtml;
 
-namespace ChatApp.Extension
+namespace ChatApp.Server.Extensions
 {
     public static class HtmlExtension
     {
@@ -39,21 +39,15 @@ namespace ChatApp.Extension
         public static IHTMLElement FindElementWithClassName(DispHTMLDocument document, string targetClassName)
         {
             foreach (IHTMLElement child in document.body.children)
-            {
                 if (child.className == targetClassName)
-                {
                     return child;
-                }
-            }
             return null;
         }
 
         public static T ConvertFromDBVal<T>(object obj)
         {
             if ((obj == null) || (obj == DBNull.Value))
-            {
                 return default(T); // returns the default value for the type
-            }
             return (T) obj;
         }
 

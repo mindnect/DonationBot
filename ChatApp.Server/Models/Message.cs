@@ -1,4 +1,4 @@
-namespace ChatAppLib.Models
+namespace ChatApp.Server.Models
 {
     public class Message
     {
@@ -7,13 +7,13 @@ namespace ChatAppLib.Models
             SelfParse(message);
         }
 
-        public string Text { get; set; }
+        public string msg { get; set; }
 
-        public string Param { get; set; }
+        public string param { get; set; }
 
         public override string ToString()
         {
-            return $"{Param,10} {Text,16}";
+            return $"{param,10} {msg,16}";
         }
 
         private void SelfParse(string message)
@@ -21,12 +21,12 @@ namespace ChatAppLib.Models
             if (message.StartsWith("@"))
             {
                 var split = message.Split(new[] {' '}, 2);
-                Param = split[0];
-                if (split.Length > 1) Text = split[1];
+                param = split[0];
+                if (split.Length > 1) msg = split[1];
             }
             else
             {
-                Text = message;
+                msg = message;
             }
         }
     }

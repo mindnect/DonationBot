@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading;
-using ChatAppLib;
-using ChatAppLib.Parsers;
+using ChatApp.Server.Parsers;
 
-namespace ChatApp
+namespace ChatApp.Server
 {
     public class ChatAppMain
     {

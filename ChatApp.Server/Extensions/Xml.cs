@@ -2,12 +2,12 @@
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace ChatAppLib.Extensions
+namespace ChatApp.Server.Extensions
 {
     public static class Xml
     {
         private static readonly XmlWriterSettings WriterSettings = new XmlWriterSettings {OmitXmlDeclaration = true};
-        private static readonly XmlSerializerNamespaces Namespaces = new XmlSerializerNamespaces(new[] {new XmlQualifiedName("", "") });
+        private static readonly XmlSerializerNamespaces Namespaces = new XmlSerializerNamespaces(new[] {new XmlQualifiedName("", "")});
 
 
         public static string Serialize<T>(this T value)

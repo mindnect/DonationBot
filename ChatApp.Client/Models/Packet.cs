@@ -1,15 +1,15 @@
-namespace ChatAppLib.Models
+namespace ChatApp.Client.Models
 {
     public class Packet
     {
-        public PacketType Type { get; set; }
-        public User User { get; set; }
-        public Message Message { get; set; }
-        public string Amount { get; set; }
+        public PacketType type { get; set; }
+        public User user { get; set; }
+        public Message message { get; set; }
+        public string amount { get; set; }
 
         public override string ToString()
         {
-            return $"{Type,8}" + User + $"{Message,-24}" + $"{Amount,-12}";
+            return $"{type,8}" + user + $"{message,-24}" + $"{amount,-12}";
         }
     }
 }

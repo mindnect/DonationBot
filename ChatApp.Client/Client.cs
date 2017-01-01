@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading;
-using ChatAppLib.Extensions;
-using ChatAppLib.Models;
+using ChatApp.Client.Extensions;
+using ChatApp.Client.Models;
 using WebSocketSharp;
 
-namespace ChatApp.ClientLib
+namespace ChatApp.Client
 {
     public static class Client
     {
@@ -31,7 +31,7 @@ namespace ChatApp.ClientLib
         private static WebSocket WebSocket { get; }
 
         public static event Action<string> OnLogging;
-        //public static event Action<Packet> OnPacket;
+        public static event Action<Packet> OnNotice, OnEnter, OnRename, OnExit, OnChat, OnWhisper, OnSpon;
 
         public static void Start()
         {
@@ -72,8 +72,35 @@ namespace ChatApp.ClientLib
 
         private static void OnMessageHandler(object sender, MessageEventArgs e)
         {
-            var t = JSon.DeSerialize<Packet>(e.Data);
-            Console.WriteLine(t.Type);
+            var packet = JSon.DeSerialize(e.Data);
+            Console.WriteLine(packet);
+            switch (packet.type)
+            {
+                case PacketType.log:
+                    OnLogging?.Invoke(packet.message.msg);
+                    break;
+                case PacketType.notice:
+                    OnNotice?.Invoke(packet);
+                    break;
+                case PacketType.enter:
+                    OnEnter?.Invoke(packet);
+                    break;
+                case PacketType.rename:
+                    OnRename?.Invoke(packet);
+                    break;
+                case PacketType.exit:
+                    OnExit?.Invoke(packet);
+                    break;
+                case PacketType.chat:
+                    OnChat?.Invoke(packet);
+                    break;
+                case PacketType.whisper:
+                    OnWhisper?.Invoke(packet);
+                    break;
+                case PacketType.spon:
+                    OnSpon?.Invoke(packet);
+                    break;
+            }
         }
 
         private static void OnErrorHandler(object sender, ErrorEventArgs e)

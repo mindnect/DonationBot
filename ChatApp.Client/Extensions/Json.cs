@@ -1,9 +1,7 @@
-﻿using ChatAppLib.Models;
+﻿using ChatApp.Client.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 
-namespace ChatAppLib.Extensions
+namespace ChatApp.Client.Extensions
 {
     public static class JSon
     {
@@ -12,14 +10,9 @@ namespace ChatAppLib.Extensions
             return JsonConvert.SerializeObject(_this);
         }
 
-        public static string PrettySerialize(this Packet _this)
+        public static Packet DeSerialize(string json)
         {
-            return JsonConvert.SerializeObject(_this, Formatting.Indented);
-        }
-
-        public static T DeSerialize<T>(string json)
-        {
-            return JsonConvert.DeserializeObject<T>(json);
+            return JsonConvert.DeserializeObject<Packet>(json);
         }
     }
 }

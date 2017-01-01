@@ -1,14 +1,14 @@
-namespace ChatAppLib.Models
+namespace ChatApp.Client.Models
 {
     public enum PacketType
     {
-        LOG,
-        NOTICE,
-        ENTER,
-        RENAME,
-        EXIT,
-        CHAT,
-        WHISPER,
-        SPON
+        log,
+        notice,
+        enter,
+        rename,
+        exit,
+        chat,
+        whisper,
+        spon
     }
 }

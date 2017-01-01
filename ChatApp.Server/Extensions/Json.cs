@@ -1,9 +1,9 @@
-﻿using ChatAppLib.Models;
+﻿using ChatApp.Server.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
-namespace ChatAppLib.Extensions
+namespace ChatApp.Server.Extensions
 {
     public static class JSon
     {
@@ -11,14 +11,13 @@ namespace ChatAppLib.Extensions
         {
             JsonConvert.DefaultSettings = () =>
             {
-                
                 var settings = new JsonSerializerSettings
                 {
                     NullValueHandling = NullValueHandling.Ignore,
                     DefaultValueHandling = DefaultValueHandling.Ignore,
                     ContractResolver = new CamelCasePropertyNamesContractResolver()
                 };
-                settings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
+                settings.Converters.Add(new StringEnumConverter {CamelCaseText = true});
                 return settings;
             };
         }
@@ -28,14 +27,9 @@ namespace ChatAppLib.Extensions
             return JsonConvert.SerializeObject(_this);
         }
 
-        public static string PrettySerialize(this Packet _this)
+        public static Packet DeSerialize(string json)
         {
-            return JsonConvert.SerializeObject(_this, Formatting.Indented);
-        }
-
-        public static T DeSerialize<T>(string json)
-        {
-            return JsonConvert.DeserializeObject<T>(json);
+            return JsonConvert.DeserializeObject<Packet>(json);
         }
     }
 }

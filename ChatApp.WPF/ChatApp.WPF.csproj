@@ -59,8 +59,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Extension\HtmlExtension.cs" />
-    <Compile Include="Parser\BaseParser.cs" />
-    <Compile Include="Parser\KakaoParser.cs" />
     <Compile Include="Win32\Win32.cs" />
     <Compile Include="Win32\WinInfo.cs" />
     <Page Include="Templates.xaml">
@@ -111,9 +109,6 @@
   <ItemGroup>
     <Resource Include="Icon\tvpot.ico" />
     <Resource Include="Icon\twtich.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Parser\_Document\메세지양식.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,21 +1,21 @@
-namespace ChatAppLib.Models
+namespace ChatApp.Server.Models
 {
     public class User
     {
         public User(string nickname, Platform platform, string grade)
         {
-            Nickname = nickname;
-            Platform = platform;
-            Grade = grade;
+            this.nickname = nickname;
+            this.platform = platform;
+            this.grade = grade;
         }
 
-        public Platform Platform { get; set; }
-        public string Grade { get; set; }
-        public string Nickname { get; set; }
+        public Platform platform { get; set; }
+        public string grade { get; set; }
+        public string nickname { get; set; }
 
         public override string ToString()
         {
-            return $"{Platform,8} {Grade,4} {Nickname,-12}";
+            return $"{platform,8} {grade,4} {nickname,-12}";
         }
     }
 }

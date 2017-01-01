@@ -2,7 +2,7 @@ using System;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
-namespace ChatAppLib
+namespace ChatApp.Server
 {
     public class BroadService : WebSocketBehavior
     {
