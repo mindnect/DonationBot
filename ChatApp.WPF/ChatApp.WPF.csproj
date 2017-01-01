@@ -113,12 +113,6 @@
     <Resource Include="Icon\twtich.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ChatApp.Data\ChatApp.ServerLib.csproj">
-      <Project>{64d67fba-9086-4e63-8d76-1e011b57edf4}</Project>
-      <Name>ChatApp.ServerLib</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Parser\_Document\메세지양식.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
