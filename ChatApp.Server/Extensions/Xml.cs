@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using ChatApp.Server.Models;
 
 namespace ChatApp.Server.Extensions
 {
@@ -10,11 +11,11 @@ namespace ChatApp.Server.Extensions
         private static readonly XmlSerializerNamespaces Namespaces = new XmlSerializerNamespaces(new[] {new XmlQualifiedName("", "")});
 
 
-        public static string Serialize<T>(this T value)
+        public static string Serialize(this Packet value)
         {
             if (value == null) return string.Empty;
 
-            var xmlSerializer = new XmlSerializer(typeof(T));
+            var xmlSerializer = new XmlSerializer(typeof(Packet));
 
             using (var stringWriter = new StringWriter())
             {
@@ -26,14 +27,14 @@ namespace ChatApp.Server.Extensions
             }
         }
 
-        public static T Deserialize<T>(string value) where T : class
+        public static Packet Deserialize(string value)
         {
             if (string.IsNullOrEmpty(value)) return null;
-            var xmlSerializer = new XmlSerializer(typeof(T));
+            var xmlSerializer = new XmlSerializer(typeof(Packet));
 
             using (var sr = new StringReader(value))
             {
-                return (T) xmlSerializer.Deserialize(sr);
+                return (Packet) xmlSerializer.Deserialize(sr);
             }
         }
     }

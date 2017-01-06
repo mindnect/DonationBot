@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // 제어됩니다. 어셈블리와 관련된 정보를 수정하려면
 // 이러한 특성 값을 변경하세요.
 
-[assembly: AssemblyTitle("ChatDB")]
+[assembly: AssemblyTitle("ChatApp Server")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ChatDB")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyProduct("ChatApp")]
+[assembly: AssemblyCopyright("Copyright ©  2016 AlcoholV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

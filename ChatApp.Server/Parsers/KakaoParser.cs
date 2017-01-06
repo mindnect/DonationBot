@@ -207,7 +207,7 @@ namespace ChatApp.Server.Parsers
                     var message = childs.GetValueOrDefault("txt_message", "").Trim();
                     var user = GetUserData(nickname);
 
-                    packet = PacketHelper.CreateSpon(user, message, amount);
+                    packet = Packet.CreateSpon(user, message, amount);
                 }
 
                 // todo : 입장, 퇴장, 임명, 해임, 닉변경, 도배경고 파싱
@@ -218,13 +218,13 @@ namespace ChatApp.Server.Parsers
                     {
                         var nickname = message.Split('(')[0].Trim();
                         var user = GetUserData(nickname);
-                        packet = PacketHelper.CreateEnter(user);
+                        packet = Packet.CreateEnter(user);
                     }
                     else if (message.Contains("퇴장"))
                     {
                         var nickname = message.Split('(')[0].Trim();
                         var user = GetUserData(nickname);
-                        packet = PacketHelper.CreateExit(user);
+                        packet = Packet.CreateExit(user);
                     }
                     else
                     {
@@ -232,7 +232,7 @@ namespace ChatApp.Server.Parsers
 	                        철수(hpch****)님이 매니저로 임명 되었습니다.
 	                        철수님의 닉네임이 '순이'(으)로 변경되었습니다.
                         */
-                        packet = PacketHelper.CreateLog(message);
+                        packet = Packet.CreateLog(message);
                     }
                 }
 
@@ -244,7 +244,7 @@ namespace ChatApp.Server.Parsers
                     var grade = childs.GetValueOrDefault("ico_label", "");
                     var message = childs.GetValueOrDefault("info_words", "").Trim();
                     var user = GetUserData(nickname, grade);
-                    packet = PacketHelper.CreateChat(user, message);
+                    packet = Packet.CreateChat(user, message);
                 }
 
                 // 쪽지
@@ -253,7 +253,7 @@ namespace ChatApp.Server.Parsers
                     var nickname = childs.GetValueOrDefault("tit_whisper", "").Split('(')[0].Trim();
                     var message = childs.GetValueOrDefault("info_whisper", "").Trim();
                     var user = GetUserData(nickname);
-                    packet = PacketHelper.CreateChat(user, message);
+                    packet = Packet.CreateChat(user, message);
                 }
 
             return packet;

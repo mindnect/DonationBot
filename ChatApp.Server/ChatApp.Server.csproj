@@ -68,7 +68,6 @@
     <Compile Include="ChatAppMain.cs" />
     <Compile Include="Document\Brokers\KakaoBroker.cs" />
     <Compile Include="Models\Message.cs" />
-    <Compile Include="PacketHelper.cs" />
     <Compile Include="UserManager.cs" />
     <Compile Include="Models\PacketType.cs" />
     <Compile Include="Models\Platform.cs" />

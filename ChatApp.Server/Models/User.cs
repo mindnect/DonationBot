@@ -2,11 +2,16 @@ namespace ChatApp.Server.Models
 {
     public class User
     {
-        public User(string nickname, Platform platform, string grade)
+        public User(string nickname, Platform platform, string grade=null)
         {
             this.nickname = nickname;
             this.platform = platform;
             this.grade = grade;
+        }
+
+        private User()
+        {
+            
         }
 
         public Platform platform { get; set; }

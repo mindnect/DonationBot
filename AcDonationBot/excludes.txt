@@ -1,0 +1,3 @@
+﻿# This file must encode Ansi
+# Remove pdb after merge
+.pdb
